@@ -1,0 +1,39 @@
+{
+  "Errors": [{
+    "type": "Ex01",
+    "value": {
+      "langCZ": "Uživatel s tímto Id neexsituje..",
+      "langEN": "User with this Id does not exist.."
+    }
+  },
+    {"type": "Ex02",
+    "value": {
+      "langCZ": "Trenink pro tohot uživatele v daném datu a době již existuje.",
+      "langEN": "Training for this user at the scepified date and time already aexists."
+      }
+    },
+    {"type": "Ex03",
+      "value": {
+        "langCZ": "Doba treninku pro danný datum je mimo povolený rozsah.",
+        "langEN": "Training time of selected date is out of available range."
+      }
+    },
+    {"type": "Ex04",
+      "value": {
+        "langCZ": "Trenink neexistuje- proto nemohl být odstraněn.",
+        "langEN": "Training does not exist, therefore can not be removed."
+      }
+    },
+    {"type": "S01",
+      "value": {
+        "langCZ": "Trenink úspěšně vytvořen.",
+        "langEN": "Training was succesfully created."
+      }
+    },
+    {"type": "S02",
+      "value": {
+        "langCZ": "Trenink úspěšně odstraněn.",
+        "langEN": "Training was succesfully removed."
+      }
+    }]
+}
