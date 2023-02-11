@@ -12,6 +12,12 @@ public class UserController : ControllerBase
     {
         _userService = userService;
     }
+
+    [HttpPost("user-Login")]
+    public IActionResult UserLogin([FromBody] Atletika_Denik_API.Data.Models.UserLogin userLogin)
+    {
+        return Ok(_userService.LoginUser(userLogin.userName, userLogin.userPassword));
+    }
     
     [HttpGet("get-User-By-ID")]
     public IActionResult GetUserByID(int id = 0)
@@ -20,14 +26,14 @@ public class UserController : ControllerBase
     }
     
     [HttpPost("create-User")]
-    public IActionResult CreateUser( Atletika_Denik_API.Data.Models.UsersCreate user, int trenerId)
+    public IActionResult CreateUser(Atletika_Denik_API.Data.Models.UsersCreate user, int trenerId)
     {
         _userService.CreateUser(user, trenerId);
         return Ok();
     }
     
     [HttpPut("update-User")]
-    public IActionResult UpdateUser( Atletika_Denik_API.Data.Models.Users user, int trenerId)
+    public IActionResult UpdateUser(Atletika_Denik_API.Data.Models.Users user, int trenerId)
     {
         _userService.UpdateUser(user, trenerId);
         return Ok();

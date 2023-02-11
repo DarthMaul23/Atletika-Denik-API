@@ -14,6 +14,21 @@ namespace Atletika_Denik_API.Data.Services
             _userContext = context;
         }
 
+        public Models.UserLoginResponse LoginUser(string userName, string userPassword)
+        {
+            using (var context = _userContext)
+            {
+                if (context.Users.FirstOrDefault(u => u.userName == userName && u.userPassword == userPassword) != null)
+                {
+                    return new Models.UserLoginResponse(){loggedin = true, token = new Guid()};
+                }
+                else
+                {
+                    return new Models.UserLoginResponse(){loggedin = false, token = null};
+                }
+            }
+        }
+
         public Users GetUserByID(int userId)
         {
             return _userContext.Users.FirstOrDefault(x => x.id == userId);
