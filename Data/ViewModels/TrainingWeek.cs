@@ -58,6 +58,17 @@ public class Users
     public int? admin { get; set; }
 }
 
+public class UserList
+{
+    public int id {get; set; }
+    public string firstName {get; set;}
+    public string lastName {get; set;}
+    public string yearOfBirth {get; set;}
+    public string category {get; set;}
+    public string sex {get; set;}
+    public string trener {get; set;}
+}
+
 public class Asociace_Trener_Uzivatel
 {
     public int id { get; set; }

@@ -18,7 +18,13 @@ public class UserController : ControllerBase
     {
         return Ok(_userService.LoginUser(userLogin.userName, userLogin.userPassword));
     }
-    
+
+    [HttpGet("get-User-List")]
+    public IActionResult GetUserList(int trenerId = 0)
+    {
+        return Ok(_userService.GetUserList(trenerId));
+    }
+
     [HttpGet("get-User-By-ID")]
     public IActionResult GetUserByID(int id = 0)
     {

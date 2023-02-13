@@ -1,3 +1,4 @@
+using System.Xml.Schema;
 using System.Text.Json;
 using Atletika_Denik_API.Data.ViewModels;
 using Microsoft.EntityFrameworkCore;
@@ -20,11 +21,11 @@ namespace Atletika_Denik_API.Data.Services
             {
                 if (context.Users.FirstOrDefault(u => u.userName == userName && u.userPassword == userPassword) != null)
                 {
-                    return new Models.UserLoginResponse(){loggedin = true, token = new Guid()};
+                    return new Models.UserLoginResponse(){loggedin = true, token = new Guid(), userName = userName};
                 }
                 else
                 {
-                    return new Models.UserLoginResponse(){loggedin = false, token = null};
+                    return new Models.UserLoginResponse(){loggedin = false, token = null, userName = null};
                 }
             }
         }
@@ -82,11 +83,38 @@ namespace Atletika_Denik_API.Data.Services
             }
         }
 
-        public List<Users> GetUsersForTrainer(int trener_id)
+        public List<UserList> GetUserList(int trenerId){
+
+            List<UserList> userList = new List<UserList>();
+
+            using (var context = _userContext)
+            {
+                var usersData = from user in _userContext.Users
+                            join trener in _userContext.Asociace_Trener_Uzivatel on user.id equals trener.user_id
+                            join info in _userContext.User_Info on user.id equals info.UserId
+                            select new {userId = user.id, userInfo = info.Info};
+
+                foreach (var item in usersData){
+                    var _info = JsonSerializer.Deserialize<ViewModels.Info>(item.userInfo);
+                    userList.Add(new UserList(){
+                        id = item.userId,
+                        firstName = _info.FirstName,
+                        lastName = _info.LastName,
+                        yearOfBirth = _info.BirthDate,
+                        category = "test",
+                        sex = "M",
+                        trener = "Honza"
+                    });
+                }
+                return userList;
+            }
+        }
+
+        public List<Users> GetUsersForTrainer(int trenerId)
         {
             using (var context = _userContext)
             {
-                var users_id = context.Asociace_Trener_Uzivatel.Where(a => a.trener_id == trener_id)
+                var users_id = context.Asociace_Trener_Uzivatel.Where(a => a.trener_id == trenerId)
                     .Select(x => x.user_id).ToList();
                 return context.Users.Where(x => users_id.Contains(x.id)).ToList();
             }
