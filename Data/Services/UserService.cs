@@ -1,3 +1,4 @@
+using System.Runtime.Serialization;
 using System.Xml.Schema;
 using System.Text.Json;
 using Atletika_Denik_API.Data.ViewModels;
@@ -21,11 +22,11 @@ namespace Atletika_Denik_API.Data.Services
             {
                 if (context.Users.FirstOrDefault(u => u.userName == userName && u.userPassword == userPassword) != null)
                 {
-                    return new Models.UserLoginResponse(){loggedin = true, token = new Guid(), userName = userName};
+                    return new Models.UserLoginResponse() { loggedin = true, token = new Guid(), userName = userName };
                 }
                 else
                 {
-                    return new Models.UserLoginResponse(){loggedin = false, token = null, userName = null};
+                    return new Models.UserLoginResponse() { loggedin = false, token = null, userName = null };
                 }
             }
         }
@@ -83,28 +84,22 @@ namespace Atletika_Denik_API.Data.Services
             }
         }
 
-        public List<UserList> GetUserList(int trenerId){
+        public List<Info> GetUserList(int trenerId)
+        {
 
-            List<UserList> userList = new List<UserList>();
+            List<Info> userList = new List<Info>();
 
             using (var context = _userContext)
             {
                 var usersData = from user in _userContext.Users
-                            join trener in _userContext.Asociace_Trener_Uzivatel on user.id equals trener.user_id
-                            join info in _userContext.User_Info on user.id equals info.UserId
-                            select new {userId = user.id, userInfo = info.Info};
+                                join trener in _userContext.Asociace_Trener_Uzivatel on user.id equals trener.user_id
+                                join info in _userContext.User_Info on user.id equals info.UserId
+                                select new { userId = user.id, userInfo = info.Info };
 
-                foreach (var item in usersData){
+                foreach (var item in usersData)
+                {
                     var _info = JsonSerializer.Deserialize<ViewModels.Info>(item.userInfo);
-                    userList.Add(new UserList(){
-                        id = item.userId,
-                        firstName = _info.FirstName,
-                        lastName = _info.LastName,
-                        yearOfBirth = _info.BirthDate,
-                        category = "test",
-                        sex = "M",
-                        trener = "Honza"
-                    });
+                    userList.Add(new DataTransformation().GetInfoObject(item.userId, _info));
                 }
                 return userList;
             }
@@ -129,16 +124,7 @@ namespace Atletika_Denik_API.Data.Services
                 ViewModels.UserInfo userInfo = new ViewModels.UserInfo()
                 {
                     UserId = _userInfo.UserId,
-                    Info = new Info()
-                    {
-                        FirstName = info.FirstName,
-                        LastName = info.LastName,
-                        Email = info.Email,
-                        Adress = info.Adress,
-                        BirthDate = info.BirthDate,
-                        City = info.City,
-                        Zip = info.Zip
-                    }
+                    Info = new DataTransformation().GetInfoObject(_userInfo.UserId, info)
                 };
                 return userInfo;
             }
@@ -181,6 +167,28 @@ namespace Atletika_Denik_API.Data.Services
                 context.Remove(userInfo);
                 context.SaveChanges();
             }
+        }
+    }
+
+    class DataTransformation
+    {
+        public Info GetInfoObject(int userId, Info? info)
+        {
+            return new Info()
+            {
+                Id = userId,
+                FirstName = info.FirstName,
+                LastName = info.LastName,
+                Email = info.Email,
+                Adress = info.Adress,
+                BirthDate = info.BirthDate,
+                Phone = info.Phone,
+                Sex = info.Sex,
+                Category = info.Category,
+                Discipline = info.Discipline,
+                Height = info.Height,
+                Weight = info.Weight
+            };
         }
     }
 }
