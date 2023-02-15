@@ -16,6 +16,7 @@ public class UserLoginResponse
     public bool loggedin { get; set; }
     public Guid? token { get; set; }
     public string? userName { get; set; }
+    public bool admin {get; set; }
 }
 
 public class Users

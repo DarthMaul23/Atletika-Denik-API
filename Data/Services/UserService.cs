@@ -20,13 +20,14 @@ namespace Atletika_Denik_API.Data.Services
         {
             using (var context = _userContext)
             {
-                if (context.Users.FirstOrDefault(u => u.userName == userName && u.userPassword == userPassword) != null)
+                var user = context.Users.FirstOrDefault(u => u.userName == userName && u.userPassword == userPassword);
+                if (user != null)
                 {
-                    return new Models.UserLoginResponse() { loggedin = true, token = new Guid(), userName = userName };
+                    return new Models.UserLoginResponse() { loggedin = true, token = Guid.NewGuid(), userName = userName, admin =  user.admin == 1 ? true : false};
                 }
                 else
                 {
-                    return new Models.UserLoginResponse() { loggedin = false, token = null, userName = null };
+                    return new Models.UserLoginResponse() { loggedin = false, token = null, userName = null, admin =  false};
                 }
             }
         }
