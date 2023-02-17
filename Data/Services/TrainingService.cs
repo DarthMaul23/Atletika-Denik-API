@@ -31,7 +31,7 @@ public class TrainingService
                 orderby asociace_treninku.date, asociace_treninku.type
                 select new
                 {
-                    userId = users.id, date = asociace_treninku.date, treninkId = asociace_treninku.trenink_id,
+                    userId = users.id, dayOfWeek = new DataTransformation().GetDayOfWeekFromDate(asociace_treninku.date), date = asociace_treninku.date, treninkId = asociace_treninku.trenink_id,
                     treninkDefinice = trenink.definition, responseId = asociace_treninku.response_id,
                     responseDefinice = user_response.definition, type = asociace_treninku.type
                 };
@@ -61,6 +61,7 @@ public class TrainingService
                 list.Add(new ViewModels.Training()
                 {
                     User_Id = item.userId,
+                    DayOfWeek = item.dayOfWeek,
                     Date = item.date,
                     Type = item.type,
                     DefinitionId = item.treninkId,

@@ -1,3 +1,4 @@
+using System;
 using Microsoft.EntityFrameworkCore;
 
 namespace Atletika_Denik_API.Data.ViewModels;
@@ -11,6 +12,7 @@ public class TrainingParams
 public class Training
 {
     public int User_Id { get; set; }
+    public int? DayOfWeek { get; set; }
     public string? Date { get; set; }
     public int? DefinitionId { get; set; }
     public List<TrainingDefinition>? Definition { get; set; }
