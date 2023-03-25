@@ -19,7 +19,7 @@ public class TrainingService
     {
         using (var context = _trainingContext)
         {
-            DateTime date = DateTime.Parse(_date);
+            DateTime date = _date == null || _date == "" ? DateTime.Now : DateTime.Parse(_date);
             var list = new List<ViewModels.Training>();
             var query = from users in context.Users.Where(u => u.id == _id)
                 join asociace_treninku in context.Asociace_Treninku.Where(a =>
