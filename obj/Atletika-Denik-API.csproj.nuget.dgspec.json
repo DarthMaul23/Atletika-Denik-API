@@ -22,8 +22,7 @@
         "sources": {
           "/usr/local/share/dotnet/library-packs": {},
           "https://api.nuget.org/v3/index.json": {},
-          "https://azureartifacts.microsoft.com/myTeam": {},
-          "https://creasoft.pkgs.visualstudio.com/_packaging/Creasoft/nuget/v3/index.json": {}
+          "https://azureartifacts.microsoft.com/myTeam": {}
         },
         "frameworks": {
           "net6.0": {
@@ -62,6 +61,10 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[6.0.11, )"
+            },
+            "QuestPDF": {
+              "target": "Package",
+              "version": "[2022.12.2, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",

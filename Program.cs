@@ -19,6 +19,7 @@ builder.Services.AddDbContext<UserContext>();
 //Adding services
 builder.Services.AddTransient<TrainingService>();
 builder.Services.AddTransient<UserService>();
+builder.Services.AddTransient<PDFService>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

@@ -148,3 +148,15 @@
 /Users/darthmaul/Documents/C#/Personal_Atletika/Atletika-Denik-API/obj/Debug/net6.0/Atletika-Denik-API.pdb
 /Users/darthmaul/Documents/C#/Personal_Atletika/Atletika-Denik-API/obj/Debug/net6.0/Atletika-Denik-API.genruntimeconfig.cache
 /Users/darthmaul/Documents/C#/Personal_Atletika/Atletika-Denik-API/obj/Debug/net6.0/ref/Atletika-Denik-API.dll
+/Users/darthmaul/Documents/C#/Personal_Atletika/Atletika-Denik-API/bin/Debug/net6.0/HarfBuzzSharp.dll
+/Users/darthmaul/Documents/C#/Personal_Atletika/Atletika-Denik-API/bin/Debug/net6.0/QuestPDF.dll
+/Users/darthmaul/Documents/C#/Personal_Atletika/Atletika-Denik-API/bin/Debug/net6.0/SkiaSharp.dll
+/Users/darthmaul/Documents/C#/Personal_Atletika/Atletika-Denik-API/bin/Debug/net6.0/SkiaSharp.HarfBuzz.dll
+/Users/darthmaul/Documents/C#/Personal_Atletika/Atletika-Denik-API/bin/Debug/net6.0/runtimes/osx/native/libHarfBuzzSharp.dylib
+/Users/darthmaul/Documents/C#/Personal_Atletika/Atletika-Denik-API/bin/Debug/net6.0/runtimes/win-arm64/native/libHarfBuzzSharp.dll
+/Users/darthmaul/Documents/C#/Personal_Atletika/Atletika-Denik-API/bin/Debug/net6.0/runtimes/win-x64/native/libHarfBuzzSharp.dll
+/Users/darthmaul/Documents/C#/Personal_Atletika/Atletika-Denik-API/bin/Debug/net6.0/runtimes/win-x86/native/libHarfBuzzSharp.dll
+/Users/darthmaul/Documents/C#/Personal_Atletika/Atletika-Denik-API/bin/Debug/net6.0/runtimes/osx/native/libSkiaSharp.dylib
+/Users/darthmaul/Documents/C#/Personal_Atletika/Atletika-Denik-API/bin/Debug/net6.0/runtimes/win-arm64/native/libSkiaSharp.dll
+/Users/darthmaul/Documents/C#/Personal_Atletika/Atletika-Denik-API/bin/Debug/net6.0/runtimes/win-x64/native/libSkiaSharp.dll
+/Users/darthmaul/Documents/C#/Personal_Atletika/Atletika-Denik-API/bin/Debug/net6.0/runtimes/win-x86/native/libSkiaSharp.dll
