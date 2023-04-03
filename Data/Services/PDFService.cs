@@ -11,6 +11,7 @@ using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using Document = QuestPDF.Fluent.Document;
 using TrainingDefinition = Atletika_Denik_API.Data.ViewModels.TrainingDefinition;
+using System.Globalization;
 
 namespace Atletika_Denik_API.Data.Services;
 
@@ -36,11 +37,9 @@ public class PDFService
                     page.DefaultTextStyle(x => x.FontSize(12));
                     page.DefaultTextStyle(x => x.FontFamily("Arial"));
 
-                    // var _date = DateTime.Now.ToString("dd-MM-yyyy");
-
                     page.Header()
                         .PaddingBottom(10)
-                        .Text("Treninky uživatele " + _trainingContext.Users.First(x => x.id == _id).userName + " na týden od " + _date + " do " + DateTime.Parse(_date).AddDays(5).ToString("yyyy-MM-dd"))
+                        .Text("Treninky uživatele [" + _trainingContext.Users.First(x => x.id == _id).userName + "] na týden od " + _date + " do " + DateTime.Parse(_date).AddDays(5).ToString("yyyy-MM-dd"))
                         .SemiBold().FontSize(12).FontColor(Colors.Black);
 
                     page.Content()
@@ -78,11 +77,11 @@ public class PDFService
 
                                     table.Header(header =>
                                     {
-                                        header.Cell().ColumnSpan(4).Element(CellStyle).Text(training.Date);
-                                        header.Cell().Element(CellStyle).Text("Col1");
-                                        header.Cell().Element(CellStyle).Text("Col2");
-                                        header.Cell().Element(CellStyle).Text("Col3");
-                                        header.Cell().Element(CellStyle).Text("Col4");
+                                        header.Cell().ColumnSpan(4).Element(CellStyle).Text(GetDateAsText(training.Date));
+                                        header.Cell().Element(CellStyle).Text("A");
+                                        header.Cell().Element(CellStyle).Text("B");
+                                        header.Cell().Element(CellStyle).Text("C");
+                                        header.Cell().Element(CellStyle).Text("D");
 
                                         IContainer CellStyle(IContainer container) => DefaultCellStyle(container, Colors.Grey.Lighten3);
                                     });
@@ -128,6 +127,25 @@ public class PDFService
         //Response.Headers.Add("Content-Disposition", "inline; filename=hello.pdf");
 
         return result;
+    }
+
+    private string GetDateAsText(string _date)
+    {
+        string newDate = "";
+
+        DateTime date;
+
+        if (DateTime.TryParseExact(_date, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out date))
+        {
+            DataTransformation _trans = new DataTransformation();
+
+            newDate = _trans.GetDayOfWeek((int)date.DayOfWeek - 1) + " " + date.Day + ". " + _trans.GetMonth(date.Month - 1) + " " + date.Year;
+        }
+        else
+        {
+            Console.WriteLine("Invalid date format.");
+        }
+        return newDate;
     }
 
     public List<ViewModels.Training> GetUserTrainignWeek(int _id, string _date)
