@@ -39,7 +39,7 @@ public class PDFService
 
                     page.Header()
                         .PaddingBottom(10)
-                        .Text("Treninky uživatele [" + _trainingContext.Users.First(x => x.id == _id).userName + "] na týden od " + _date + " do " + DateTime.Parse(_date).AddDays(5).ToString("yyyy-MM-dd"))
+                        .Text("Treninky uživatele [" + _trainingContext.Users.First(x => x.id == _id).userName + "] na týden od " + GetDateAsText(_date, 2) + " do " + GetDateAsText(DateTime.Parse(_date).AddDays(5).ToString("yyyy-MM-dd"), 2))
                         .SemiBold().FontSize(12).FontColor(Colors.Black);
 
                     page.Content()
@@ -47,11 +47,10 @@ public class PDFService
                         {
 
                             var data = GetUserTrainignWeek(_id, _date);
-
+                            
                             foreach (var training in data)
                             {
                                 x.Spacing(20);
-
                                 x.Item().Border(1).Table(table =>
                                 {
 
@@ -77,7 +76,7 @@ public class PDFService
 
                                     table.Header(header =>
                                     {
-                                        header.Cell().ColumnSpan(4).Element(CellStyle).Text(GetDateAsText(training.Date));
+                                        header.Cell().ColumnSpan(4).Element(CellStyle).Text(GetDateAsText(training.Date, 1));
                                         header.Cell().Element(CellStyle).Text("A");
                                         header.Cell().Element(CellStyle).Text("B");
                                         header.Cell().Element(CellStyle).Text("C");
@@ -109,27 +108,20 @@ public class PDFService
                 });
             });
 
-        // Render the PDF to a MemoryStream
         var stream = new MemoryStream();
         document.GeneratePdf(stream);
 
-        // Reset the MemoryStream position to the beginning
         stream.Position = 0;
-
-        // Return the MemoryStream as a FileStreamResult
 
         var result = new FileStreamResult(stream, "application/pdf")
         {
             FileDownloadName = "Hello.pdf",
         };
 
-        // Set the Content-Disposition header to specify the file name
-        //Response.Headers.Add("Content-Disposition", "inline; filename=hello.pdf");
-
         return result;
     }
 
-    private string GetDateAsText(string _date)
+    private string GetDateAsText(string _date, int type)
     {
         string newDate = "";
 
@@ -138,8 +130,12 @@ public class PDFService
         if (DateTime.TryParseExact(_date, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out date))
         {
             DataTransformation _trans = new DataTransformation();
-
-            newDate = _trans.GetDayOfWeek((int)date.DayOfWeek - 1) + " " + date.Day + ". " + _trans.GetMonth(date.Month - 1) + " " + date.Year;
+            if (type == 1){
+                newDate = _trans.GetDayOfWeek((int)date.DayOfWeek - 1) + " " + date.Day + ". " + _trans.GetMonth(date.Month - 1) + " " + date.Year;
+            }else 
+                if(type == 2){
+                    newDate = date.Day + ". " + _trans.GetMonth(date.Month - 1) + " " + date.Year;
+            }
         }
         else
         {
