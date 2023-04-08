@@ -170,7 +170,6 @@ public class TrainingService
             else
             {
                 string _trainingId = Guid.NewGuid().ToString();
-                Console.WriteLine("Id Treninku: ", _trainingId);
 
                 int id_response = context.Training_User_Response.Select(r => r.id).Max();
                 foreach (var item in response)
