@@ -21,6 +21,86 @@ public class TrainingService
         {
             DateTime date = _date == null || _date == "" ? DateTime.Now : DateTime.Parse(_date);
             var list = new List<ViewModels.Training>();
+            var query = (from users in context.Users.Where(u => u.id == _id)
+                         join asociace_treninku in context.Training_Association.Where(a =>
+                                 a.userId == _id && (DateTime)(object)a.date >= date.AddDays(-((int)date.DayOfWeek + 1)) &&
+                                 (DateTime)(object)a.date <= date.AddDays(+(7 - (int)date.DayOfWeek))) on users.id equals
+                             asociace_treninku.userId
+                         join trenink in context.Training_Definition on asociace_treninku.trainingId equals trenink.trainingId
+                         join trenink_user_response in context.Training_User_Response on
+                             new { n1 = trenink.trainingId, n2 = trenink.rowid } equals
+                             new { n1 = trenink_user_response.trainingId, n2 = trenink_user_response.rowId }
+                         orderby asociace_treninku.date
+                         select new
+                         {
+                             userId = users.id,
+                             dayOfWeek = new DataTransformation().GetDayOfWeekFromDate(asociace_treninku.date),
+                             date = asociace_treninku.date,
+                             treninkId = asociace_treninku.trainingId,
+                             definitionId = trenink.id,
+                             rowId = trenink.rowid,
+                             col1 = trenink.col1,
+                             col2 = trenink.col2,
+                             col3 = trenink.col3,
+                             col4 = trenink.col4,
+                             responseId = trenink_user_response.id,
+                             responseRowId = trenink_user_response.rowId,
+                             response = trenink_user_response.response
+                         }).ToList();
+
+            // Console.WriteLine("Query: " + query.ToQueryString());
+
+            foreach (var item in query)
+            {
+                if (!list.Contains(list.Find(x => x.TrainingId == item.treninkId)))
+                {
+                    List<ViewModels.Training_Definition> definitionsList = new List<ViewModels.Training_Definition>();
+                    List<ViewModels.Training_User_Response> responsesList = new List<ViewModels.Training_User_Response>();
+
+                    foreach (var _item in query.Where(x => x.treninkId == item.treninkId).ToList())
+                    {
+                        definitionsList.Add(new ViewModels.Training_Definition()
+                        {
+                            id = _item.definitionId,
+                            rowid = _item.rowId,
+                            col1 = _item.col1,
+                            col2 = _item.col2,
+                            col3 = _item.col3,
+                            col4 = _item.col4
+                        });
+
+                        responsesList.Add(new ViewModels.Training_User_Response()
+                        {
+                            id = _item.responseId,
+                            rowId = _item.responseRowId,
+                            response = _item.response
+                        });
+                    }
+
+                    list.Add(new ViewModels.Training()
+                    {
+
+                        User_Id = item.userId,
+                        TrainingId = item.treninkId,
+                        DayOfWeek = item.dayOfWeek,
+                        Date = item.date,
+                        Type = 0,
+                        Definition = definitionsList,
+                        Response = responsesList
+                    });
+                }
+            }
+            return list;
+        }
+    }
+
+    /*
+    public List<ViewModels.Training> GetUserTrainignWeek(int _id, string _date)
+    {
+        using (var context = _trainingContext)
+        {
+            DateTime date = _date == null || _date == "" ? DateTime.Now : DateTime.Parse(_date);
+            var list = new List<ViewModels.Training>();
             var query = from users in context.Users.Where(u => u.id == _id)
                 join asociace_treninku in context.Asociace_Treninku.Where(a =>
                         a.user_id == _id && (DateTime)(object)a.date >= date.AddDays(-((int)date.DayOfWeek + 1)) &&
@@ -72,52 +152,75 @@ public class TrainingService
             }
             return list;
         }
-    }
+    }*/
 
-    public Error CreateTraining(int userId, string date, int type, List<TrainingDefinition> definition, List<TrainingResponse> response)
+    public Error CreateTraining(int userId, string date, int type, List<New_Training_Definition> definition, List<New_Training_User_Response> response)
     {
         using (var context = _trainingContext)
         {
-            if(!Enumerable.Range(1,4).Contains(type)){
+            if (!Enumerable.Range(1, 4).Contains(type))
+            {
                 return error.GetError("Ex03");
-            }else 
-            if (context.Asociace_Treninku.FirstOrDefault(a => a.user_id == userId && a.date == date && a.type == type) != null)
+            }
+            else
+            if (context.Training_Association.FirstOrDefault(a => a.userId == userId && a.date == date) != null)
             {
                 return error.GetError("Ex02");
-            }else{
-                int id_trenink = context.Trenink.Select(t => t.id).Max() + 1;
-                int id_response = context.Trenink_user_response.Select(r => r.id).Max() + 1;
-                context.Trenink_user_response.Add(new Trenink_user_response()
+            }
+            else
+            {
+                string _trainingId = Guid.NewGuid().ToString();
+                Console.WriteLine("Id Treninku: ", _trainingId);
+
+                int id_response = context.Training_User_Response.Select(r => r.id).Max();
+                foreach (var item in response)
                 {
-                    id = id_response,
-                    definition = JsonSerializer.Serialize(response)
-                });
-                context.Asociace_Treninku.Add(new Asociace_Treninku()
+                    context.Training_User_Response.Add(new Training_User_Response()
+                    {
+                        id = id_response + (response.IndexOf(item) + 1),
+                        trainingId = _trainingId,
+                        rowId = (response.IndexOf(item) + 1),
+                        response = item.response
+                    });
+                }
+
+                int id_training_association = context.Training_Association.Select(a => a.id).Max() + 1;
+                context.Training_Association.Add(new Training_Association()
                 {
-                    id = context.Asociace_Treninku.Select(a => a.id).Max() + 1,
+                    id = id_training_association,
+                    userId = userId,
+                    trainingId = _trainingId,
                     date = date,
-                    user_id = userId,
-                    trenink_id = id_trenink,
-                    response_id = id_response,
-                    type = type
                 });
-                context.Trenink.Add(new Trenink()
+
+                int trainingNo = context.Training_Definition.Select(a => a.id).Max();
+                foreach (var item in definition)
                 {
-                    id = id_trenink,
-                    definition = JsonSerializer.Serialize(definition)
-                });
+                    context.Training_Definition.Add(new Training_Definition()
+                    {
+                        id = trainingNo + (definition.IndexOf(item) + 1),
+                        trainingId = _trainingId,
+                        rowid = (definition.IndexOf(item) + 1),
+                        col1 = item.col1,
+                        col2 = item.col2,
+                        col3 = item.col3,
+                        col4 = item.col4
+                    });
+                }
+
                 context.SaveChanges();
+
                 return error.GetError("S01");
             }
         }
     }
-    
-    public void UpdateTraining(int treninkId, int type, List<TrainingDefinition> definition, List<TrainingResponse> response)
+
+    public void UpdateTraining(int treninkId, int type, List<New_Training_Definition> definition, List<New_Training_User_Response> response)
     {
         using (var context = _trainingContext)
         {
             var trainingAsociaction = context.Asociace_Treninku.FirstOrDefault(a => a.trenink_id == treninkId && a.type == type);
-                
+
             var trainingDefinition = context.Trenink.FirstOrDefault(t => t.id == trainingAsociaction.trenink_id);
             trainingDefinition.definition = JsonSerializer.Serialize(definition);
             context.Entry(trainingDefinition).State = EntityState.Modified;
@@ -131,12 +234,12 @@ public class TrainingService
             context.SaveChanges();
         }
     }
-    
-    public Error DeleteTraining(int treninkId)
+
+    public Error DeleteTraining(string _trainingId)
     {
         using (var context = _trainingContext)
         {
-            var trainingAsociaction = context.Asociace_Treninku.FirstOrDefault(a => a.trenink_id == treninkId);
+            var trainingAsociaction = context.Training_Association.FirstOrDefault(a => a.trainingId == _trainingId);
             if (trainingAsociaction == null)
             {
                 return error.GetError("Ex04");
@@ -147,23 +250,23 @@ public class TrainingService
                 context.Remove(trainingAsociaction);
 
                 var trainingDefinition =
-                    context.Trenink.FirstOrDefault(t => t.id == trainingAsociaction.trenink_id);
+                    context.Training_Definition.FirstOrDefault(t => t.trainingId == _trainingId);
                 context.Entry(trainingDefinition).State = EntityState.Deleted;
                 context.Remove(trainingDefinition);
 
                 var trainingResponse =
-                    context.Trenink_user_response.FirstOrDefault(r => r.id == trainingAsociaction.response_id);
+                    context.Training_User_Response.FirstOrDefault(r => r.trainingId == _trainingId);
                 context.Entry(trainingResponse).State = EntityState.Deleted;
                 context.Remove(trainingResponse);
 
                 context.SaveChanges();
-                    
+
                 return error.GetError("S02");
             }
         }
     }
 
-    public void UpdateTrainingResponse(int id, List<TrainingResponse> responseJSON)
+    public void UpdateTrainingResponse(int id, List<Training_User_Response> responseJSON)
     {
         using (var context = _trainingContext)
         {
@@ -174,5 +277,5 @@ public class TrainingService
             context.SaveChanges();
         }
     }
-    
+
 }

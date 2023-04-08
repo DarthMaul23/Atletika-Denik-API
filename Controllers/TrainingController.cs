@@ -33,13 +33,13 @@ public class TrainingController : ControllerBase
     }
     
     [HttpDelete("delete-Training")]
-    public IActionResult DeleteTrainign(int treninkId)
+    public IActionResult DeleteTrainign(string treninkId)
     {
         return Ok(_trainingService.DeleteTraining(treninkId));
     }
     
     [HttpPut("update-Training-Response")]
-    public IActionResult UpdateTrainingResponse(int id, [FromBody] List<TrainingResponse> response)
+    public IActionResult UpdateTrainingResponse(int id, [FromBody] List<Training_User_Response> response)
     {
         _trainingService.UpdateTrainingResponse(id, response);
         return Ok();
