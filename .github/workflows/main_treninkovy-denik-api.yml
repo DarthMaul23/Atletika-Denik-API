@@ -53,5 +53,5 @@ jobs:
         with:
           app-name: 'Treninkovy-denik-API'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_F2511C62F5504ABDBB975EDBEC501C21 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_EF70ECDD133E4EB086716D61F1C2FE00 }}
           package: .
