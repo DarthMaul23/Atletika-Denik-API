@@ -9,7 +9,7 @@ builder.Services.AddCors();
 
 builder.Services.AddControllers();
 
-var connectionString_Atletika = builder.Configuration.GetConnectionString("ConnectionString1");
+var connectionString_Atletika = builder.Configuration.GetConnectionString("ConnectionString3");
 
 //Adding contexts
 // builder.Services.AddDbContext<TrainingContext>(opt => opt.UseSqlServer(connectionString_Atletika));

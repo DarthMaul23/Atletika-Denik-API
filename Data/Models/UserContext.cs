@@ -17,7 +17,7 @@ namespace Atletika_Denik_API.Data.Models
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(new ConfigurationBuilder().AddJsonFile("appsettings.json").Build()
-                .GetSection("ConnectionStrings")["ConnectionString1"]);
+                .GetSection("ConnectionStrings")["ConnectionString3"]);
             base.OnConfiguring(optionsBuilder);
         }
 
