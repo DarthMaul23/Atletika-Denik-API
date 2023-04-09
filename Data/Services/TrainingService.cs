@@ -171,7 +171,7 @@ public class TrainingService
             {
                 string _trainingId = Guid.NewGuid().ToString();
 
-                int id_response = context.Training_User_Response.Select(r => r.id).Max();
+                int id_response = context.Training_User_Response.Count() == 0 ? 0 : context.Training_User_Response.Select(r => r.id).Max();
                 foreach (var item in response)
                 {
                     context.Training_User_Response.Add(new Training_User_Response()
@@ -183,7 +183,7 @@ public class TrainingService
                     });
                 }
 
-                int id_training_association = context.Training_Association.Select(a => a.id).Max() + 1;
+                int id_training_association = context.Training_Association.Count() == 0 ? 0 : context.Training_Association.Select(a => a.id).Max() + 1;
                 context.Training_Association.Add(new Training_Association()
                 {
                     id = id_training_association,
@@ -192,7 +192,7 @@ public class TrainingService
                     date = date,
                 });
 
-                int trainingNo = context.Training_Definition.Select(a => a.id).Max();
+                int trainingNo =  context.Training_Definition.Count() == 0 ? 0 : context.Training_Definition.Select(a => a.id).Max();
                 foreach (var item in definition)
                 {
                     context.Training_Definition.Add(new Training_Definition()
