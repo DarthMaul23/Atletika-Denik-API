@@ -43,7 +43,7 @@ public class Training_Definition
 {
     public int id { get; set; }
     public string? trainingId { get; set; }
-    public int rowid { get; set; }
+    public int rowId { get; set; }
     public string? col1 { get; set; }
     public string? col2 { get; set; }
     public string? col3 { get; set; }

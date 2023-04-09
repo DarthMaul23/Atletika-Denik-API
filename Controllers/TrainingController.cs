@@ -26,7 +26,7 @@ public class TrainingController : ControllerBase
     }
     
     [HttpPut("update-Training")]
-    public IActionResult updateTrainign(int treninkId, int type, [FromBody] TrainingParams _data)
+    public IActionResult updateTrainign(string treninkId, int type, [FromBody] TrainingParams _data)
     {
         _trainingService.UpdateTraining(treninkId, type, _data.Definitions, _data.Responses);
         return Ok();
@@ -39,9 +39,9 @@ public class TrainingController : ControllerBase
     }
     
     [HttpPut("update-Training-Response")]
-    public IActionResult UpdateTrainingResponse(int id, [FromBody] List<Training_User_Response> response)
+    public IActionResult UpdateTrainingResponse(string treninkId, [FromBody] List<Training_User_Response> response)
     {
-        _trainingService.UpdateTrainingResponse(id, response);
+        _trainingService.UpdateTrainingResponse(treninkId, response);
         return Ok();
     }
 

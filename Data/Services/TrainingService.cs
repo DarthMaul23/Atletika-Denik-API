@@ -28,7 +28,7 @@ public class TrainingService
                              asociace_treninku.userId
                          join trenink in context.Training_Definition on asociace_treninku.trainingId equals trenink.trainingId
                          join trenink_user_response in context.Training_User_Response on
-                             new { n1 = trenink.trainingId, n2 = trenink.rowid } equals
+                             new { n1 = trenink.trainingId, n2 = trenink.rowId } equals
                              new { n1 = trenink_user_response.trainingId, n2 = trenink_user_response.rowId }
                          orderby asociace_treninku.date
                          select new
@@ -38,7 +38,7 @@ public class TrainingService
                              date = asociace_treninku.date,
                              treninkId = asociace_treninku.trainingId,
                              definitionId = trenink.id,
-                             rowId = trenink.rowid,
+                             rowId = trenink.rowId,
                              col1 = trenink.col1,
                              col2 = trenink.col2,
                              col3 = trenink.col3,
@@ -62,7 +62,7 @@ public class TrainingService
                         definitionsList.Add(new ViewModels.Training_Definition()
                         {
                             id = _item.definitionId,
-                            rowid = _item.rowId,
+                            rowId = _item.rowId,
                             col1 = _item.col1,
                             col2 = _item.col2,
                             col3 = _item.col3,
@@ -199,7 +199,7 @@ public class TrainingService
                     {
                         id = trainingNo + (definition.IndexOf(item) + 1),
                         trainingId = _trainingId,
-                        rowid = (definition.IndexOf(item) + 1),
+                        rowId = (definition.IndexOf(item) + 1),
                         col1 = item.col1,
                         col2 = item.col2,
                         col3 = item.col3,
@@ -214,23 +214,58 @@ public class TrainingService
         }
     }
 
-    public void UpdateTraining(int treninkId, int type, List<New_Training_Definition> definition, List<New_Training_User_Response> response)
+    public void UpdateTraining(string _trainingId, int type, List<New_Training_Definition> definition, List<New_Training_User_Response> response)
     {
         using (var context = _trainingContext)
         {
-            var trainingAsociaction = context.Asociace_Treninku.FirstOrDefault(a => a.trenink_id == treninkId && a.type == type);
+            var trainingAsociaction = context.Training_Association.FirstOrDefault(a => a.trainingId == _trainingId);
+            if (trainingAsociaction != null)
+            {
+                var _training = context.Training_Definition.Where(a => a.trainingId == _trainingId);
 
-            var trainingDefinition = context.Trenink.FirstOrDefault(t => t.id == trainingAsociaction.trenink_id);
-            trainingDefinition.definition = JsonSerializer.Serialize(definition);
-            context.Entry(trainingDefinition).State = EntityState.Modified;
-            context.Update(trainingDefinition);
+                foreach(var _item in _training){
+                    context.Entry(_item).State = EntityState.Deleted;
+                    context.Training_Definition.Remove(_item);
+                }
 
-            var trainingResponse = context.Trenink_user_response.FirstOrDefault(r => r.id == trainingAsociaction.response_id);
-            trainingResponse.definition = JsonSerializer.Serialize(response);
-            context.Entry(trainingResponse).State = EntityState.Modified;
-            context.Update(trainingResponse);
+                int trainingNo = context.Training_Definition.Select(a => a.id).Max();
 
-            context.SaveChanges();
+                foreach (var item in definition)
+                {
+                    context.Training_Definition.Add(new Training_Definition()
+                    {
+                        id = trainingNo + (definition.IndexOf(item) + 1),
+                        trainingId = _trainingId,
+                        rowId = (definition.IndexOf(item) + 1),
+                        col1 = item.col1,
+                        col2 = item.col2,
+                        col3 = item.col3,
+                        col4 = item.col4
+                    });
+                }
+
+                var _trainingResponse = context.Training_User_Response.Where(a => a.trainingId == _trainingId);
+
+                foreach(var _item in _trainingResponse){
+                    context.Entry(_item).State = EntityState.Deleted;
+                    context.Training_User_Response.Remove(_item);
+                }
+
+                int id_response = context.Training_User_Response.Select(r => r.id).Max();
+
+                foreach (var item in response)
+                {
+                    context.Training_User_Response.Add(new Training_User_Response()
+                    {
+                        id = id_response + (response.IndexOf(item) + 1),
+                        trainingId = _trainingId,
+                        rowId = (response.IndexOf(item) + 1),
+                        response = item.response
+                    });
+                }
+
+                context.SaveChanges();
+            }
         }
     }
 
@@ -248,15 +283,19 @@ public class TrainingService
                 context.Entry(trainingAsociaction).State = EntityState.Deleted;
                 context.Remove(trainingAsociaction);
 
-                var trainingDefinition =
-                    context.Training_Definition.FirstOrDefault(t => t.trainingId == _trainingId);
-                context.Entry(trainingDefinition).State = EntityState.Deleted;
-                context.Remove(trainingDefinition);
+                var _training = context.Training_Definition.Where(a => a.trainingId == _trainingId);
 
-                var trainingResponse =
-                    context.Training_User_Response.FirstOrDefault(r => r.trainingId == _trainingId);
-                context.Entry(trainingResponse).State = EntityState.Deleted;
-                context.Remove(trainingResponse);
+                foreach(var _item in _training){
+                    context.Entry(_item).State = EntityState.Deleted;
+                    context.Training_Definition.Remove(_item);
+                }
+
+                var _trainingResponse = context.Training_User_Response.Where(r => r.trainingId == _trainingId);
+
+                foreach(var _item in _trainingResponse){
+                    context.Entry(_item).State = EntityState.Deleted;
+                    context.Training_User_Response.Remove(_item);
+                }
 
                 context.SaveChanges();
 
@@ -265,14 +304,29 @@ public class TrainingService
         }
     }
 
-    public void UpdateTrainingResponse(int id, List<Training_User_Response> responseJSON)
+    public void UpdateTrainingResponse(string _trainingId, List<Training_User_Response> response)
     {
         using (var context = _trainingContext)
         {
-            var response = context.Trenink_user_response.FirstOrDefault(r => r.id == id);
-            response.definition = JsonSerializer.Serialize(responseJSON);
-            context.Entry(response).State = EntityState.Modified;
-            context.Update(response);
+                var _trainingResponse = context.Training_User_Response.Where(a => a.trainingId == _trainingId);
+
+                foreach(var _item in _trainingResponse){
+                    context.Entry(_item).State = EntityState.Deleted;
+                    context.Training_User_Response.Remove(_item);
+                }
+
+                int id_response = context.Training_User_Response.Select(r => r.id).Max();
+
+                foreach (var item in response)
+                {
+                    context.Training_User_Response.Add(new Training_User_Response()
+                    {
+                        id = id_response + (response.IndexOf(item) + 1),
+                        trainingId = _trainingId,
+                        rowId = (response.IndexOf(item) + 1),
+                        response = item.response
+                    });
+                }
             context.SaveChanges();
         }
     }

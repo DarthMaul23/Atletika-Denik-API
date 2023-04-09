@@ -115,7 +115,7 @@ public class PDFService
 
         var result = new FileStreamResult(stream, "application/pdf")
         {
-            FileDownloadName = "Hello.pdf",
+            FileDownloadName = "trenikovy_plan.pdf",
         };
 
         return result;
@@ -160,7 +160,7 @@ public class PDFService
                              asociace_treninku.userId
                          join trenink in context.Training_Definition on asociace_treninku.trainingId equals trenink.trainingId
                          join trenink_user_response in context.Training_User_Response on
-                             new { n1 = trenink.trainingId, n2 = trenink.rowid } equals
+                             new { n1 = trenink.trainingId, n2 = trenink.rowId } equals
                              new { n1 = trenink_user_response.trainingId, n2 = trenink_user_response.rowId }
                          orderby asociace_treninku.date
                          select new
@@ -170,7 +170,7 @@ public class PDFService
                              date = asociace_treninku.date,
                              treninkId = asociace_treninku.trainingId,
                              definitionId = trenink.id,
-                             rowId = trenink.rowid,
+                             rowId = trenink.rowId,
                              col1 = trenink.col1,
                              col2 = trenink.col2,
                              col3 = trenink.col3,
@@ -194,7 +194,7 @@ public class PDFService
                         definitionsList.Add(new ViewModels.Training_Definition()
                         {
                             id = _item.definitionId,
-                            rowid = _item.rowId,
+                            rowId = _item.rowId,
                             col1 = _item.col1,
                             col2 = _item.col2,
                             col3 = _item.col3,
