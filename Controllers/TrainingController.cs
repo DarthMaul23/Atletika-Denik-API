@@ -20,9 +20,10 @@ public class TrainingController : ControllerBase
     }
 
     [HttpPost("create-Training")]
-    public IActionResult CreateTrainign(int userId, string date, int type, [FromBody] TrainingParams _data)
+    public async Task<IActionResult> CreateTraining(int userId, string date, int type, [FromBody] TrainingParams _data)
     {
-        return Ok(_trainingService.CreateTraining(userId, date, type, _data.Definitions, _data.Responses));
+        var data = await _trainingService.CreateTrainingAsync(userId, date, type, _data.Definitions, _data.Responses);
+        return Ok(data);
     }
     
     [HttpPut("update-Training")]

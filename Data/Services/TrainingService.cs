@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using System.Text.Json;
 using Atletika_Denik_API.Data.Models;
 using Atletika_Denik_API.Data.ViewModels;
@@ -154,7 +155,7 @@ public class TrainingService
         }
     }*/
 
-    public Error CreateTraining(int userId, string date, int type, List<New_Training_Definition> definition, List<New_Training_User_Response> response)
+    public async Task<Error> CreateTrainingAsync(int userId, string date, int type, List<New_Training_Definition> definition, List<New_Training_User_Response> response)
     {
         using (var context = _trainingContext)
         {
@@ -172,9 +173,10 @@ public class TrainingService
                 string _trainingId = Guid.NewGuid().ToString();
 
                 int id_response = context.Training_User_Response.FirstOrDefault() == null ? 0 : context.Training_User_Response.Select(r => r.id).Max();
+                var responses = new List<Training_User_Response>();
                 foreach (var item in response)
                 {
-                    context.Training_User_Response.Add(new Training_User_Response()
+                    responses.Add(new Training_User_Response()
                     {
                         id = id_response + (response.IndexOf(item) + 1),
                         trainingId = _trainingId,
@@ -183,19 +185,28 @@ public class TrainingService
                     });
                 }
 
+                await context.Training_User_Response.AddRangeAsync(responses);
+                await context.SaveChangesAsync();
+
                 int id_training_association = context.Training_Association.FirstOrDefault() == null ? 0 : context.Training_Association.Select(a => a.id).Max() + 1;
-                context.Training_Association.Add(new Training_Association()
+                var _associationItem = new Training_Association()
                 {
                     id = id_training_association,
                     userId = userId,
                     trainingId = _trainingId,
                     date = date,
-                });
+                };
+
+                context.Training_Association.Add(_associationItem);
+                context.SaveChanges();
 
                 int trainingNo =  context.Training_Definition.FirstOrDefault() == null ? 0 : context.Training_Definition.Select(a => a.id).Max();
+
+                var definitions = new List<Training_Definition>();
+
                 foreach (var item in definition)
                 {
-                    context.Training_Definition.Add(new Training_Definition()
+                    definitions.Add(new Training_Definition()
                     {
                         id = trainingNo + (definition.IndexOf(item) + 1),
                         trainingId = _trainingId,
@@ -206,8 +217,9 @@ public class TrainingService
                         col4 = item.col4
                     });
                 }
-
-                context.SaveChanges();
+                
+                await context.Training_Definition.AddRangeAsync(definitions);
+                await context.SaveChangesAsync();
 
                 return error.GetError("S01");
             }

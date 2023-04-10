@@ -1,6 +1,3 @@
-using System;
-using Microsoft.EntityFrameworkCore;
-
 namespace Atletika_Denik_API.Data.ViewModels;
 
 public class TrainingParams

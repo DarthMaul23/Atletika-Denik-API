@@ -43,8 +43,11 @@ namespace Atletika_Denik_API.Data.Models
             modelBuilder.Entity<ViewModels.Trenink_user_response>().HasKey(k => k.id);
 
             modelBuilder.Entity<ViewModels.Training_Association>().HasKey(k => k.id);
+            modelBuilder.Entity<ViewModels.Training_Association>().Property(p => p.id).ValueGeneratedNever();
             modelBuilder.Entity<ViewModels.Training_Definition>().HasKey(k => k.id);
+            modelBuilder.Entity<ViewModels.Training_Definition>().Property(p => p.id).ValueGeneratedNever();
             modelBuilder.Entity<ViewModels.Training_User_Response>().HasKey(k => k.id);
+            modelBuilder.Entity<ViewModels.Training_User_Response>().Property(p => p.id).ValueGeneratedNever();
         }
     }
 }
