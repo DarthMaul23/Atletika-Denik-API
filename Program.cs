@@ -15,9 +15,11 @@ var connectionString_Atletika = builder.Configuration.GetConnectionString("Conne
 // builder.Services.AddDbContext<TrainingContext>(opt => opt.UseSqlServer(connectionString_Atletika));
 builder.Services.AddDbContext<TrainingContext>();
 builder.Services.AddDbContext<UserContext>();
+builder.Services.AddDbContext<ActivitiesContext>();
 
 //Adding services
 builder.Services.AddTransient<TrainingService>();
+builder.Services.AddTransient<ActivityService>();
 builder.Services.AddTransient<UserService>();
 builder.Services.AddTransient<PDFService>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
