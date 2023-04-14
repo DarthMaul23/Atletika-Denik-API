@@ -106,11 +106,12 @@ namespace Atletika_Denik_API.Data.Services
             }
         }
 
-        public List<Users> GetUsersForTrainer(int trenerId)
+        public List<Users> GetUsersForTrainer(string trenerName)
         {
             using (var context = _userContext)
             {
-                var users_id = context.Asociace_Trener_Uzivatel.Where(a => a.trener_id == trenerId)
+                var trener = context.Users.Where(x=> x.userName == trenerName).Select(x=> x.id).ToList().ElementAt(0);
+                var users_id = context.Asociace_Trener_Uzivatel.Where(a => a.trener_id == trener)
                     .Select(x => x.user_id).ToList();
                 return context.Users.Where(x => users_id.Contains(x.id)).ToList();
             }

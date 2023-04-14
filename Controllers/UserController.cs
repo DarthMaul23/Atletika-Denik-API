@@ -53,9 +53,9 @@ public class UserController : ControllerBase
     }
     
     [HttpGet("get-Users-For-Trainer")]
-    public IActionResult GetUsersForTrainer(int trener_id = 1)
+    public IActionResult GetUsersForTrainer(string trenerName)
     {
-        return Ok(_userService.GetUsersForTrainer(trener_id));
+        return Ok(_userService.GetUsersForTrainer(trenerName));
     }
     
     [HttpGet("get-User-Info-By-Id")]

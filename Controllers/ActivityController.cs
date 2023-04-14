@@ -19,4 +19,11 @@ public class ActivityController : ControllerBase
         return Ok(_activityService.GetListOfActivities(userId, pageNo, itemsPerPage, search));
     }
 
+    [HttpPost("create-New-Activity")]
+    public IActionResult CreateNewActivity(NewTag tag,[FromBody] List<NewTagDetail> details)
+    {
+        _activityService.CreateNewActivity(tag, details);
+        return Ok();
+    }
+
 }
