@@ -40,7 +40,7 @@ public class ActivityService
             foreach (var detail in details)
             {
 
-                List<DateTime> dates = GetDatesBetween(Convert.ToDateTime(detail.dateFrom), Convert.ToDateTime(detail.dateTo), detail.weekDay, GetInterval(detail.repetition));
+                List<DateTime> dates = GetDatesBetween(Convert.ToDateTime(detail.dateFrom), Convert.ToDateTime(detail.dateTo), detail.weekDay, GetInterval(detail.repetition), false);
 
                 foreach (var date in dates)
                 {
@@ -53,7 +53,7 @@ public class ActivityService
         }
     }
 
-    private List<DateTime> GetDatesBetween(DateTime startDate, DateTime endDate, int targetDayIndex, int interval)
+    private List<DateTime> GetDatesBetween(DateTime startDate, DateTime endDate, int targetDayIndex, int interval, bool weekend)
     {
         List<DateTime> dates = new List<DateTime>();
         DateTime currentDate = startDate;
@@ -61,14 +61,27 @@ public class ActivityService
 
         while (currentDate <= endDate)
         {
-            if (currentDate.DayOfWeek == targetDay)
+            if (currentDate.DayOfWeek == targetDay && interval != 1)
             {
                 dates.Add(currentDate);
                 currentDate = currentDate.AddDays(interval);
             }
             else
             {
-                currentDate = currentDate.AddDays(1);
+                if (weekend)
+                {
+                    dates.Add(currentDate);
+                    currentDate = currentDate.AddDays(1);
+
+                }
+                else
+                {
+                    if (currentDate.DayOfWeek != DayOfWeek.Saturday || currentDate.DayOfWeek != DayOfWeek.Sunday)
+                    {
+                        dates.Add(currentDate);
+                        currentDate = currentDate.AddDays(1);
+                    }
+                }
             }
         }
 
