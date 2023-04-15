@@ -1,3 +1,4 @@
+using Microsoft.Win32;
 using System.Net.Mime;
 using System.Text.Json;
 using Atletika_Denik_API.Data.Models;
@@ -33,18 +34,65 @@ public class ActivityService
         }
     }
 
-    public async Task CreateNewActivity(NewTag tag, List<NewTagDetail> details)
+    public async Task CreateNewActivity(NewTag tag, List<NewTagUserSettings> details)
     {
         using (var context = _activiesContext)
         {
+            string _NewTagId = Guid.NewGuid().ToString();
+
+            var _tag = new Tag()
+            {
+                id = _NewTagId,
+                name = tag.name,
+                color = tag.color+"",
+                description = tag.description+""
+            };
+
+            context.Tag.Add(_tag);
+            context.SaveChanges();
+
             foreach (var detail in details)
             {
+                string _NewTagAsocId = Guid.NewGuid().ToString();
+                var _associationItem = new Tag_Association()
+                {
+                    id = _NewTagAsocId,
+                    tagId = _NewTagId,
+                    userId = detail.id
+                };
+
+                context.Tag_Association.Add(_associationItem);
+                context.SaveChanges();
+
+
+                var _TagUserSettingsItem = new Tag_User_Settings()
+                {
+                    id = Guid.NewGuid().ToString(),
+                    tagAsocId = _NewTagAsocId,
+                    repetition = detail.repetition,
+                    weekDay = detail.weekDay,
+                    col = detail.column,
+                    dateFrom = detail.dateFrom,
+                    dateTo = detail.dateTo
+                };
+
+                context.Tag_User_Settings.Add(_TagUserSettingsItem);
+                context.SaveChanges();
 
                 List<DateTime> dates = GetDatesBetween(Convert.ToDateTime(detail.dateFrom), Convert.ToDateTime(detail.dateTo), detail.weekDay, GetInterval(detail.repetition), false);
 
                 foreach (var date in dates)
                 {
+                    var _TagDetails = new Tag_Details()
+                    {
+                        id = Guid.NewGuid().ToString(),
+                        tagAsocId = _NewTagAsocId,
+                        date = date.ToOADate().ToString(),
+                        created = DateTime.Now.ToString()
+                    };
 
+                    context.Tag_Details.Add(_TagDetails);
+                    context.SaveChanges();
                 }
 
                 await context.SaveChangesAsync();
@@ -72,7 +120,6 @@ public class ActivityService
                 {
                     dates.Add(currentDate);
                     currentDate = currentDate.AddDays(1);
-
                 }
                 else
                 {
@@ -90,28 +137,18 @@ public class ActivityService
 
     private int GetInterval(string interval)
     {
-        if (interval == "daily")
+        switch (interval)
         {
-            return 1;
-        }
-        else
-        if (interval == "weekly")
-        {
-            return 7;
-        }
-        else
-        if (interval == "biweekly")
-        {
-            return 14;
-        }
-        else
-        if (interval == "monthly")
-        {
-            return 30;
-        }
-        else
-        {
-            return 1;
+            case "daily":
+                return 1;
+            case "weekly":
+                return 7;
+            case "biweekly":
+                return 14;
+            case "monthly":
+                return 30;
+            default:
+                return 1;
         }
     }
 }

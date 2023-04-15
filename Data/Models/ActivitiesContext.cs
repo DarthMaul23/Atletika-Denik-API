@@ -15,6 +15,10 @@ namespace Atletika_Denik_API.Data.Models
         public DbSet<ViewModels.Tag> Tag { get; set; }
         public DbSet<ViewModels.Tag_Association> Tag_Association { get; set; }
 
+        public DbSet<ViewModels.Tag_Details> Tag_Details { get; set; }
+
+        public DbSet<ViewModels.Tag_User_Settings> Tag_User_Settings { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("ConnectionStrings")["ConnectionString3"]);
@@ -32,6 +36,8 @@ namespace Atletika_Denik_API.Data.Models
 
             modelBuilder.Entity<ViewModels.Training_Association>().HasKey(k => k.id);
             modelBuilder.Entity<ViewModels.Training_Association>().Property(p => p.id).ValueGeneratedNever();
+            modelBuilder.Entity<ViewModels.Training_Definition>().HasKey(k => k.id);
+            modelBuilder.Entity<ViewModels.Training_Definition>().Property(p => p.id).ValueGeneratedNever();
             modelBuilder.Entity<ViewModels.Training_Definition>().HasKey(k => k.id);
             modelBuilder.Entity<ViewModels.Training_Definition>().Property(p => p.id).ValueGeneratedNever();
             modelBuilder.Entity<ViewModels.Training_User_Response>().HasKey(k => k.id);

@@ -7,7 +7,7 @@ public class ReturnItems{
 
 public class Tag_Association
 {
-    public int id { get; set; }
+    public string id { get; set; }
     public string tagId { get; set; }
     public int userId { get; set; }
 }
@@ -20,7 +20,15 @@ public class Tag
     public string description { get; set; }
 }
 
-public class Tag_Detail
+public class Tag_Details
+{
+    public string id { get; set; }
+    public string tagAsocId { get; set; }
+    public string date { get; set; }
+    public string created { get; set; }
+}
+
+public class Tag_User_Settings
 {
     public string id { get; set; }
     public string tagAsocId { get; set; }
@@ -38,7 +46,7 @@ public class NewTag
     public string description { get; set; }
 }
 
-public class NewTagDetail{
+public class NewTagUserSettings{
     public int id {get; set;}
     public string repetition { get; set; }
     public int weekDay { get; set; }

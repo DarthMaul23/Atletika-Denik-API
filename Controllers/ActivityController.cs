@@ -20,7 +20,7 @@ public class ActivityController : ControllerBase
     }
 
     [HttpPost("create-New-Activity")]
-    public IActionResult CreateNewActivity(NewTag tag,[FromBody] List<NewTagDetail> details)
+    public IActionResult CreateNewActivity(NewTag tag,[FromBody] List<NewTagUserSettings> details)
     {
         _activityService.CreateNewActivity(tag, details);
         return Ok();
