@@ -14,7 +14,7 @@ public class TrainingController : ControllerBase
     }
 
     [HttpGet("get-Training-Week")]
-    public IActionResult GetUserTrainignWeek(int id = 1, string date = "2022-12-04")
+    public IActionResult GetUserTrainignWeek(int id = 1, string date = "2023-04-04")
     {
         return Ok(_trainingService.GetUserTrainignWeek(id, date));
     }

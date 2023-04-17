@@ -27,21 +27,14 @@ namespace Atletika_Denik_API.Data.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<ViewModels.Training>().HasNoKey(); // HasKey(c => new { c.User_Id, c.Date});
-            modelBuilder.Entity<ViewModels.Trenink>().HasKey(k => k.id);
-            modelBuilder.Entity<ViewModels.Training_data>().HasNoKey();
-            modelBuilder.Entity<ViewModels.User>().HasNoKey();
-            modelBuilder.Entity<ViewModels.Asociace_Treninku>().HasKey(k => k.id);
-            modelBuilder.Entity<ViewModels.Trenink_user_response>().HasKey(k => k.id);
-
-            modelBuilder.Entity<ViewModels.Training_Association>().HasKey(k => k.id);
-            modelBuilder.Entity<ViewModels.Training_Association>().Property(p => p.id).ValueGeneratedNever();
-            modelBuilder.Entity<ViewModels.Training_Definition>().HasKey(k => k.id);
-            modelBuilder.Entity<ViewModels.Training_Definition>().Property(p => p.id).ValueGeneratedNever();
-            modelBuilder.Entity<ViewModels.Training_Definition>().HasKey(k => k.id);
-            modelBuilder.Entity<ViewModels.Training_Definition>().Property(p => p.id).ValueGeneratedNever();
-            modelBuilder.Entity<ViewModels.Training_User_Response>().HasKey(k => k.id);
-            modelBuilder.Entity<ViewModels.Training_User_Response>().Property(p => p.id).ValueGeneratedNever();
+            modelBuilder.Entity<ViewModels.Tag>().HasKey(k => k.id);
+            modelBuilder.Entity<ViewModels.Tag>().Property(p => p.id).ValueGeneratedNever();
+            modelBuilder.Entity<ViewModels.Tag_Association>().HasKey(k => k.id);
+            modelBuilder.Entity<ViewModels.Tag_Association>().Property(p => p.id).ValueGeneratedNever();
+            modelBuilder.Entity<ViewModels.Tag_Details>().HasKey(k => k.id);
+            modelBuilder.Entity<ViewModels.Tag_Details>().Property(p => p.id).ValueGeneratedNever();
+            modelBuilder.Entity<ViewModels.Tag_User_Settings>().HasKey(k => k.id);
+            modelBuilder.Entity<ViewModels.Tag_User_Settings>().Property(p => p.id).ValueGeneratedNever();
         }
     }
 }

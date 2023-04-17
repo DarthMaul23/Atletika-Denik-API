@@ -180,8 +180,6 @@ public class PDFService
                              response = trenink_user_response.response
                          }).ToList();
 
-            // Console.WriteLine("Query: " + query.ToQueryString());
-
             foreach (var item in query)
             {
                 if (!list.Contains(list.Find(x => x.TrainingId == item.treninkId)))

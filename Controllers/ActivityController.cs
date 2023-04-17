@@ -19,10 +19,16 @@ public class ActivityController : ControllerBase
         return Ok(_activityService.GetListOfActivities(userId, pageNo, itemsPerPage, search));
     }
 
-    [HttpPost("create-New-Activity")]
-    public IActionResult CreateNewActivity(NewTag tag,[FromBody] List<NewTagUserSettings> details)
+    [HttpGet("get-Activity-Detail")]
+    public IActionResult GetActivityDetail(string tagId)
     {
-        _activityService.CreateNewActivity(tag, details);
+        return Ok(_activityService.GetActivityDetal(tagId));
+    }
+
+    [HttpPost("create-New-Activity")]
+    public async Task<IActionResult> CreateNewActivityAsync(NewTag tag,[FromBody] List<NewTagUserSettings> details)
+    {
+        await _activityService.CreateNewActivity(tag, details);
         return Ok();
     }
 

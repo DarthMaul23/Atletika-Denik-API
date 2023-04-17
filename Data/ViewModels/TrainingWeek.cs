@@ -20,6 +20,7 @@ public class Training
     public int User_Id { get; set; }
     public int? DayOfWeek { get; set; }
     public string? Date { get; set; }
+    public List<Tag> Activity { get; set; }
     public List<Training_Definition>? Definition { get; set; }
     public List<Training_User_Response>? Response { get; set; }
     public int? Type { get; set; }

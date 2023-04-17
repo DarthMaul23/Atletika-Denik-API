@@ -34,6 +34,31 @@ public class ActivityService
         }
     }
 
+    public TagDetail GetActivityDetal(string tagDetailId)
+    {
+        using (var context = _activiesContext)
+        {
+            var query = (from tagDetail in context.Tag_Details
+                         where tagDetail.id == tagDetailId
+                         join tagAsoc in context.Tag_Association on tagDetail.tagAsocId equals tagAsoc.id
+                         join tag in context.Tag on tagAsoc.tagId equals tag.id
+                         select new
+                         {
+                             id = tagDetail.id,
+                             name = tag.name,
+                             color = tag.color,
+                             description = tag.description
+                         });
+            /*
+            string queryString = query.ToQueryString();
+            Console.WriteLine(queryString);
+            */
+            var data = query.ToList().ElementAt(0);
+
+            return new TagDetail() { id = tagDetailId, name = data.name, color = data.color, description = data.description};
+        }
+    }
+
     public async Task CreateNewActivity(NewTag tag, List<NewTagUserSettings> details)
     {
         using (var context = _activiesContext)
@@ -44,12 +69,11 @@ public class ActivityService
             {
                 id = _NewTagId,
                 name = tag.name,
-                color = tag.color+"",
-                description = tag.description+""
+                color = tag.color + "",
+                description = tag.description + ""
             };
 
             context.Tag.Add(_tag);
-            context.SaveChanges();
 
             foreach (var detail in details)
             {
@@ -62,8 +86,6 @@ public class ActivityService
                 };
 
                 context.Tag_Association.Add(_associationItem);
-                context.SaveChanges();
-
 
                 var _TagUserSettingsItem = new Tag_User_Settings()
                 {
@@ -77,7 +99,6 @@ public class ActivityService
                 };
 
                 context.Tag_User_Settings.Add(_TagUserSettingsItem);
-                context.SaveChanges();
 
                 List<DateTime> dates = GetDatesBetween(Convert.ToDateTime(detail.dateFrom), Convert.ToDateTime(detail.dateTo), detail.weekDay, GetInterval(detail.repetition), false);
 
@@ -87,16 +108,14 @@ public class ActivityService
                     {
                         id = Guid.NewGuid().ToString(),
                         tagAsocId = _NewTagAsocId,
-                        date = date.ToOADate().ToString(),
-                        created = DateTime.Now.ToString()
+                        date = date.ToString("yyyy-MM-dd"),
+                        created = DateTime.Now.ToString("yyyy-MM-dd")
                     };
 
                     context.Tag_Details.Add(_TagDetails);
-                    context.SaveChanges();
                 }
 
                 await context.SaveChangesAsync();
-
             }
         }
     }
