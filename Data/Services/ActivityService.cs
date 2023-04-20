@@ -11,6 +11,7 @@ namespace Atletika_Denik_API.Data.Services;
 public class ActivityService
 {
     private Atletika_Denik_API.Data.Models.ActivitiesContext _activiesContext;
+    private DataTransformation dataTrans = new DataTransformation();
     Errors error = new Errors();
     public ActivityService(Atletika_Denik_API.Data.Models.ActivitiesContext activiesContext)
     {
@@ -100,7 +101,7 @@ public class ActivityService
 
                 context.Tag_User_Settings.Add(_TagUserSettingsItem);
 
-                List<DateTime> dates = GetDatesBetween(Convert.ToDateTime(detail.dateFrom), Convert.ToDateTime(detail.dateTo), detail.weekDay, GetInterval(detail.repetition), false);
+                List<DateTime> dates = dataTrans.GetDatesBetween(Convert.ToDateTime(detail.dateFrom), Convert.ToDateTime(detail.dateTo), detail.weekDay, detail.repetition, false);
 
                 foreach (var date in dates)
                 {
@@ -119,7 +120,8 @@ public class ActivityService
             }
         }
     }
-
+}
+/*
     private List<DateTime> GetDatesBetween(DateTime startDate, DateTime endDate, int targetDayIndex, int interval, bool weekend)
     {
         List<DateTime> dates = new List<DateTime>();
@@ -171,3 +173,4 @@ public class ActivityService
         }
     }
 }
+*/

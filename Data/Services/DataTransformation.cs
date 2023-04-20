@@ -60,5 +60,68 @@ namespace Atletika_Denik_API.Data.Services
             months.Add("Prosince");
             return months.ElementAt(_index);
         }
+
+        public List<DateTime> GetDatesBetween(DateTime startDate, DateTime endDate, int targetDayIndex, string _interval, bool weekend)
+        {
+            List<DateTime> dates = new List<DateTime>();
+            DateTime currentDate = startDate;
+            DayOfWeek targetDay = (DayOfWeek)(targetDayIndex % 7);
+            int interval = GetInterval(_interval);
+
+            while (currentDate <= endDate)
+            {
+                if (currentDate.DayOfWeek == targetDay && interval != 1)
+                {
+                    dates.Add(currentDate);
+                    currentDate = currentDate.AddDays(interval);
+                }
+                else
+                {
+                    if (weekend)
+                    {
+                        dates.Add(currentDate);
+                        currentDate = currentDate.AddDays(1);
+                    }
+                    else
+                    {
+                        if (currentDate.DayOfWeek != DayOfWeek.Saturday || currentDate.DayOfWeek != DayOfWeek.Sunday)
+                        {
+                            dates.Add(currentDate);
+                            currentDate = currentDate.AddDays(1);
+                        }
+                    }
+                }
+            }
+
+            return dates;
+        }
+
+        private int GetInterval(string interval)
+        {
+            switch (interval)
+            {
+                case "daily":
+                    return 1;
+                case "weekly":
+                    return 7;
+                case "biweekly":
+                    return 14;
+                case "monthly":
+                    return 30;
+                default:
+                    return 1;
+            }
+        }
+
+        public DateTime GetMondayOfWeek(DateTime inputDate)
+        {
+            int delta = DayOfWeek.Monday - inputDate.DayOfWeek;
+            if (delta > 0)
+            {
+                delta -= 7;
+            }
+            DateTime monday = inputDate.AddDays(delta);
+            return monday;
+        }
     }
 }

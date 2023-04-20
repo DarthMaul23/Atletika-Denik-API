@@ -1,3 +1,4 @@
+using System.Data;
 using System.Runtime.CompilerServices;
 using System.Diagnostics;
 using System.Net.Mime;
@@ -15,18 +16,20 @@ public class TrainingService
 
     private Atletika_Denik_API.Data.Models.ActivitiesContext _tagContext = new ActivitiesContext();
 
+    DataTransformation dataTrans = new DataTransformation();
+
     Errors error = new Errors();
     public TrainingService(Atletika_Denik_API.Data.Models.TrainingContext context)
     {
         _trainingContext = context;
     }
 
-    public List<ViewModels.Training> GetUserTrainignWeek(int _id, string _date)
+    public List<ViewModels.TrainingDay> GetUserTrainignWeek(int _id, string _date)
     {
         using (var context = _trainingContext)
         {
             DateTime date = _date == null || _date == "" ? DateTime.Now : DateTime.Parse(_date);
-            var list = new List<ViewModels.Training>();
+            var list = new List<ViewModels.TrainingDay>();
 
             var query = (from users in context.Users.Where(u => u.id == _id)
                          join asociace_treninku in context.Training_Association.Where(a =>
@@ -53,48 +56,53 @@ public class TrainingService
                              responseId = trenink_user_response.id,
                              responseRowId = trenink_user_response.rowId,
                              response = trenink_user_response.response
-                         });
+                         }).ToArray();
 
-            foreach (var item in query.ToList())
+            var dates = dataTrans.GetDatesBetween(dataTrans.GetMondayOfWeek(date), dataTrans.GetMondayOfWeek(date).AddDays(4), 1, "daily", false);
+
+            foreach (var item in dates)
             {
-                if (!list.Contains(list.Find(x => x.TrainingId == item.treninkId)))
+
+                List<ViewModels.Training_Definition> definitionsList = new List<ViewModels.Training_Definition>();
+                List<ViewModels.Training_User_Response> responsesList = new List<ViewModels.Training_User_Response>();
+                var _testDate = item;
+                foreach (var _item in query.Where(x => x.date == item.ToString("yyyy-MM-dd")).ToArray())
                 {
-                    List<ViewModels.Training_Definition> definitionsList = new List<ViewModels.Training_Definition>();
-                    List<ViewModels.Training_User_Response> responsesList = new List<ViewModels.Training_User_Response>();
-
-                    foreach (var _item in query.Where(x => x.treninkId == item.treninkId).ToList())
+                    definitionsList.Add(new Training_Definition()
                     {
-                        definitionsList.Add(new ViewModels.Training_Definition()
-                        {
-                            id = _item.definitionId,
-                            rowId = _item.rowId,
-                            col1 = _item.col1,
-                            col2 = _item.col2,
-                            col3 = _item.col3,
-                            col4 = _item.col4
-                        });
-
-                        responsesList.Add(new ViewModels.Training_User_Response()
-                        {
-                            id = _item.responseId,
-                            rowId = _item.responseRowId,
-                            response = _item.response
-                        });
-                    }
-
-                    list.Add(new ViewModels.Training()
-                    {
-
-                        User_Id = item.userId,
-                        TrainingId = item.treninkId,
-                        DayOfWeek = item.dayOfWeek,
-                        Date = item.date,
-                        Type = 0,
-                        Activity = GetActivities(item.userId, item.date),
-                        Definition = definitionsList,
-                        Response = responsesList
+                        id = _item.definitionId,
+                        rowId = _item.rowId,
+                        col1 = _item.col1,
+                        col2 = _item.col2,
+                        col3 = _item.col3,
+                        col4 = _item.col4
                     });
                 }
+
+                foreach (var _item in query.Where(x => x.date == item.ToString("yyyy-MM-dd")).ToArray())
+                {
+                    responsesList.Add(new ViewModels.Training_User_Response()
+                    {
+                        id = _item.responseId,
+                        rowId = _item.responseRowId,
+                        response = _item.response
+                    });
+                }
+
+                list.Add(new ViewModels.TrainingDay()
+                {
+                    userId = _id,
+                    dayOfWeek = (int)item.DayOfWeek,
+                    date = item.ToString("yyyy-MM-dd"),
+                    type = 0,
+                    activity = GetActivities(_id, item.ToString("yyyy-MM-dd")),
+                    training = new Training1()
+                    {
+                        trainingId = query.FirstOrDefault(x => x.date == item.ToString("yyyy-MM-dd"))?.treninkId,
+                        definition = definitionsList,
+                        response = responsesList
+                    },
+                });
             }
             return list;
         }

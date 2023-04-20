@@ -20,10 +20,27 @@ public class Training
     public int User_Id { get; set; }
     public int? DayOfWeek { get; set; }
     public string? Date { get; set; }
-    public List<Tag> Activity { get; set; }
+    public List<Tag> Activity { get; set; }
     public List<Training_Definition>? Definition { get; set; }
     public List<Training_User_Response>? Response { get; set; }
     public int? Type { get; set; }
+}
+
+public class TrainingDay
+{
+    public int userId { get; set; }
+    public string date { get; set; }
+    public int dayOfWeek { get; set; }
+    public int type { get; set; }
+    public List<Tag> activity { get; set; }
+    public Training1 training { get; set; }
+}
+
+public class Training1
+{
+    public string trainingId { get; set; }
+    public List<Training_Definition> definition { get; set; }
+    public List<Training_User_Response> response { get; set; }
 }
 
 public class Training_data
@@ -125,7 +142,8 @@ public class Trenink_user_response
     public string? definition { get; set; }
 }
 
-public class New_Training_Definition{
+public class New_Training_Definition
+{
     public int id { get; set; }
     public string? col1 { get; set; }
     public string? col2 { get; set; }
@@ -133,6 +151,7 @@ public class New_Training_Definition{
     public string? col4 { get; set; }
 }
 
-public class New_Training_User_Response{
+public class New_Training_User_Response
+{
     public int response { get; set; }
 }
