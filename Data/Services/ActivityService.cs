@@ -35,7 +35,7 @@ public class ActivityService
         }
     }
 
-    public TagDetail GetActivityDetal(string tagDetailId)
+    public TagDetail GetActivityDescription(string tagDetailId)
     {
         using (var context = _activiesContext)
         {
@@ -56,7 +56,58 @@ public class ActivityService
             */
             var data = query.ToList().ElementAt(0);
 
-            return new TagDetail() { id = tagDetailId, name = data.name, color = data.color, description = data.description};
+            return new TagDetail() { id = tagDetailId, name = data.name, color = data.color, description = data.description };
+        }
+    }
+
+    public EditTag GetActivityDetail(string tagId)
+    {
+        using (var context = _activiesContext)
+        {
+            var queryTag = (from tag in context.Tag
+                            where tag.id == tagId
+                            select new
+                            {
+                                id = tag.id,
+                                name = tag.name,
+                                color = tag.color,
+                                description = tag.description
+                            }).First();
+
+            var queryTagSettings = from tagUserSettings in context.Tag_User_Settings
+                                   join tagAssociation in context.Tag_Association on tagUserSettings.tagAsocId equals tagAssociation.id
+                                   where tagAssociation.tagId == tagId
+                                   select new
+                                   {
+                                       id = tagAssociation.userId,
+                                       asocId = tagUserSettings.tagAsocId,
+                                       repetition = tagUserSettings.repetition,
+                                       weekDay = tagUserSettings.weekDay,
+                                       col = tagUserSettings.col,
+                                       dateFrom = tagUserSettings.dateFrom,
+                                       dateTo = tagUserSettings.dateTo,
+                                   };
+            
+            List<EditTagSettings> _settings = new List<EditTagSettings>();
+
+            foreach(var _item in queryTagSettings.ToList()){
+                _settings.Add(new EditTagSettings() {
+                    id = _item.id,
+                    tagAsocId = _item.asocId, 
+                    repetition = _item.repetition, 
+                    weekDay = _item.weekDay, 
+                    col = _item.col,
+                    dateFrom = _item.dateFrom, 
+                    dateTo = _item.dateTo
+                });
+            }
+
+            /*
+            string queryString = query.ToQueryString();
+            Console.WriteLine(queryString);
+            */
+
+            return new EditTag() { id = queryTag.id, name = queryTag.name, color = queryTag.color, description = queryTag.description, settings = _settings};
         }
     }
 

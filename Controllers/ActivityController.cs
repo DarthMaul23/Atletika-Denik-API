@@ -19,10 +19,16 @@ public class ActivityController : ControllerBase
         return Ok(_activityService.GetListOfActivities(userId, pageNo, itemsPerPage, search));
     }
 
+    [HttpGet("get-Activity-Description")]
+    public IActionResult GetActivityDescription(string tagId)
+    {
+        return Ok(_activityService.GetActivityDescription(tagId));
+    }
+
     [HttpGet("get-Activity-Detail")]
     public IActionResult GetActivityDetail(string tagId)
     {
-        return Ok(_activityService.GetActivityDetal(tagId));
+        return Ok(_activityService.GetActivityDetail(tagId));
     }
 
     [HttpPost("create-New-Activity")]

@@ -39,6 +39,25 @@ public class Tag_User_Settings
     public string dateTo { get; set; }
 }
 
+public class EditTag{
+    public string id { get; set; }
+    public string name { get; set; }
+    public string color { get; set; }
+    public string description { get; set; }
+    public List<EditTagSettings> settings { get; set; }
+}
+
+public class EditTagSettings
+{
+    public int id { get; set; }
+    public string tagAsocId { get; set; }
+    public string repetition { get; set; }
+    public int weekDay { get; set; }
+    public int col { get; set; }
+    public string dateFrom { get; set; }
+    public string dateTo { get; set; }
+}
+
 public class NewTag
 {
     public string name { get; set; }
