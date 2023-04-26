@@ -1,6 +1,7 @@
 namespace Atletika_Denik_API.Data.ViewModels;
 
-public class ReturnItems{
+public class ReturnItems
+{
     public List<Tag> tags { get; set; }
     public int noRecords { get; set; }
 }
@@ -28,6 +29,12 @@ public class Tag_Details
     public string created { get; set; }
 }
 
+public class Tag_User_Response
+{
+    public string id { get; set; }
+    public int response { get; set; }
+}
+
 public class Tag_User_Settings
 {
     public string id { get; set; }
@@ -39,7 +46,8 @@ public class Tag_User_Settings
     public string dateTo { get; set; }
 }
 
-public class EditTag{
+public class EditTag
+{
     public string id { get; set; }
     public string name { get; set; }
     public string color { get; set; }
@@ -65,8 +73,9 @@ public class NewTag
     public string description { get; set; }
 }
 
-public class NewTagUserSettings{
-    public int id {get; set;}
+public class NewTagUserSettings
+{
+    public int id { get; set; }
     public string repetition { get; set; }
     public int weekDay { get; set; }
     public int column { get; set; }
@@ -74,7 +83,8 @@ public class NewTagUserSettings{
     public string dateTo { get; set; }
 }
 
-public class TagDetail{
+public class TagDetail
+{
     public string id { get; set; }
     public string name { get; set; }
     public string color { get; set; }

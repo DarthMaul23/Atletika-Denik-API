@@ -301,7 +301,7 @@ public class TrainingService
         }
     }
 
-    private List<Tag> GetActivities(int _userId, string _trainingDate)
+    private List<Activity2> GetActivities(int _userId, string _trainingDate)
     {
         var query = from tagAsociation in _tagContext.Tag_Association.Where(x => x.userId == _userId)
                     join tag in _tagContext.Tag on
@@ -323,10 +323,51 @@ public class TrainingService
 
         foreach (var item in query.ToList())
         {
-            activities.Add(new Tag() { id = item.id, name = item.name, color = item.color, description = item.description });
+            activities.Add(new Tag()
+            {
+                id = item.id,
+                name = item.name,
+                color = item.color,
+                description = item.description
+            });
         }
 
-        return activities;
+        List<Tag_User_Response> activitiesResponse = new List<Tag_User_Response>();
+
+        using (var context = new ActivitiesContext())
+        {
+            var tagAssociationIds = context.Tag_Association
+                .Where(ta => ta.userId == _userId)
+                .Select(ta => ta.id);
+
+            var tagDetailIds = context.Tag_Details
+                .Where(td => tagAssociationIds.Contains(td.tagAsocId) && td.date == _trainingDate)
+                .Select(td => td.id);
+
+            var tagUserResponses = context.Tag_User_Response
+                .Where(tur => tagDetailIds.Contains(tur.id))
+                .ToList();
+
+            foreach (var item in tagUserResponses)
+            {
+                activitiesResponse.Add(new Tag_User_Response()
+                {
+                    id = item.id,
+                    response = item.response
+                });
+            }
+        }
+        
+        var _trainingId = new TrainingContext().Training_Association.FirstOrDefault(x => x.userId == _userId && x.date == _trainingDate).trainingId;
+
+        List<Activity2> tags = new List<Activity2>();
+
+        foreach (var item in activities)
+        {
+            tags.Add(new Activity2(){trainingId = _trainingId, name = item.name, color = item.color, description = item.description, response = activitiesResponse.Find(x => x.id == item.id).response});
+        }
+
+        return tags;
     }
 
 }

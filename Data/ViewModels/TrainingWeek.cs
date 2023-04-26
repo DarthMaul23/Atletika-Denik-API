@@ -32,8 +32,26 @@ public class TrainingDay
     public string date { get; set; }
     public int dayOfWeek { get; set; }
     public int type { get; set; }
-    public List<Tag> activity { get; set; }
+    public List<Activity2> activity { get; set; }
     public Training1 training { get; set; }
+
+}
+
+public class Activity1
+{
+    public string trainingId { get; set; }
+    public List<Tag> activity { get; set; }
+    public List<Tag_User_Response> activityResponse { get; set; }
+}
+
+public class Activity2{
+    public string trainingId { get; set; }
+    public string name { get; set; }
+    public string color { get; set; }
+    public string description { get; set; }
+    public int response { get; set; }
+
+
 }
 
 public class Training1
