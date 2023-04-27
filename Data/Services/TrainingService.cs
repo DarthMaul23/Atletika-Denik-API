@@ -357,14 +357,20 @@ public class TrainingService
                 });
             }
         }
-        
-        var _trainingId = new TrainingContext().Training_Association.FirstOrDefault(x => x.userId == _userId && x.date == _trainingDate).trainingId;
 
+        string _trainingId = "";
+
+        using (var context = new TrainingContext())
+        {
+
+            _trainingId = context.Training_Association.FirstOrDefault(x => x.userId == _userId && x.date == _trainingDate)?.trainingId;
+
+        }
         List<Activity2> tags = new List<Activity2>();
 
         foreach (var item in activities)
         {
-            tags.Add(new Activity2(){trainingId = _trainingId, name = item.name, color = item.color, description = item.description, response = activitiesResponse.Find(x => x.id == item.id).response});
+            tags.Add(new Activity2() { trainingId = _trainingId, name = item.name, color = item.color, description = item.description, response = activitiesResponse.Find(x => x.id == item.id).response });
         }
 
         return tags;
