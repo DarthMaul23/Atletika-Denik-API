@@ -10,17 +10,17 @@ namespace Atletika_Denik_API.Data.Services;
 
 public class ActivityService
 {
-    private Atletika_Denik_API.Data.Models.ActivitiesContext _activiesContext;
+    private Atletika_Denik_API.Data.Models.ActivitiesContext _activitiesContext;
     private DataTransformation dataTrans = new DataTransformation();
     Errors error = new Errors();
     public ActivityService(Atletika_Denik_API.Data.Models.ActivitiesContext activiesContext)
     {
-        _activiesContext = activiesContext;
+        _activitiesContext = activiesContext;
     }
 
     public ReturnItems GetListOfActivities(int userId, int pageNo, int itemsPerPage, string searchTerm)
     {
-        using (var context = _activiesContext)
+        using (var context = _activitiesContext)
         {
             var query = context.Tag
                 .Where(tag => tag.name.Contains(searchTerm == null ? "" : searchTerm))
@@ -37,7 +37,7 @@ public class ActivityService
 
     public TagDetail GetActivityDescription(string tagDetailId)
     {
-        using (var context = _activiesContext)
+        using (var context = _activitiesContext)
         {
             var query = (from tagDetail in context.Tag_Details
                          where tagDetail.id == tagDetailId
@@ -50,10 +50,7 @@ public class ActivityService
                              color = tag.color,
                              description = tag.description
                          });
-            /*
-            string queryString = query.ToQueryString();
-            Console.WriteLine(queryString);
-            */
+
             var data = query.ToList().ElementAt(0);
 
             return new TagDetail() { id = tagDetailId, name = data.name, color = data.color, description = data.description };
@@ -62,7 +59,7 @@ public class ActivityService
 
     public EditTag GetActivityDetail(string tagId)
     {
-        using (var context = _activiesContext)
+        using (var context = _activitiesContext)
         {
             var queryTag = (from tag in context.Tag
                             where tag.id == tagId
@@ -87,17 +84,19 @@ public class ActivityService
                                        dateFrom = tagUserSettings.dateFrom,
                                        dateTo = tagUserSettings.dateTo,
                                    };
-            
+
             List<EditTagSettings> _settings = new List<EditTagSettings>();
 
-            foreach(var _item in queryTagSettings.ToList()){
-                _settings.Add(new EditTagSettings() {
+            foreach (var _item in queryTagSettings.ToList())
+            {
+                _settings.Add(new EditTagSettings()
+                {
                     id = _item.id,
-                    tagAsocId = _item.asocId, 
-                    repetition = _item.repetition, 
-                    weekDay = _item.weekDay, 
+                    tagAsocId = _item.asocId,
+                    repetition = _item.repetition,
+                    weekDay = _item.weekDay,
                     col = _item.col,
-                    dateFrom = _item.dateFrom, 
+                    dateFrom = _item.dateFrom,
                     dateTo = _item.dateTo
                 });
             }
@@ -107,13 +106,13 @@ public class ActivityService
             Console.WriteLine(queryString);
             */
 
-            return new EditTag() { id = queryTag.id, name = queryTag.name, color = queryTag.color, description = queryTag.description, settings = _settings};
+            return new EditTag() { id = queryTag.id, name = queryTag.name, color = queryTag.color, description = queryTag.description, settings = _settings };
         }
     }
 
     public async Task CreateNewActivity(NewTag tag, List<NewTagUserSettings> details)
     {
-        using (var context = _activiesContext)
+        using (var context = _activitiesContext)
         {
             string _NewTagId = Guid.NewGuid().ToString();
 
@@ -171,4 +170,38 @@ public class ActivityService
             }
         }
     }
-}   
+    public List<ActivityDefinitionDto> GetActivityDefinitionByTagAssociationId(string tagAssociationId, int userId)
+    {
+        var query = from tad in _activitiesContext.Tag_Activities_Definitions
+                    join taa in _activitiesContext.Tag_Activities_Association on tad.Id equals taa.ActivityDefinitionId
+                    join ta in _activitiesContext.Tag_Association on taa.TagId equals ta.id
+                    join td in _activitiesContext.Tag_Details on ta.id equals td.tagAsocId
+                    join taur in _activitiesContext.Tag_Activities_User_Responses on td.id equals taur.TagDetailId into UserResponsesGroup
+                    from ur in UserResponsesGroup.DefaultIfEmpty()
+                    where taa.TagId == tagAssociationId && ta.userId == userId
+                    select new { tad, ur };
+
+        var result = query.ToList();
+
+        if (result.Count == 0)
+        {
+            return null;
+        }
+
+        var activityDefinitionDtos = result.GroupBy(r => r.tad.Id)
+            .Select(g => new ActivityDefinitionDto
+            {
+                Id = g.Key,
+                Name = g.First().tad.Name,
+                Definitions = g.First().tad.Definition,
+                Responses = g.Where(r => r.tad.Name == g.First().tad.Name)
+                .GroupBy(r => r.ur.ActivityDefinitionId)
+                .Select(grp => grp.First())
+                .Select(r => new UserResponseDto { Id = r.ur.Id, Response = r.ur.Response })
+                .ToList() // There needs to be filter to get only one record for the definition, not all the reocrords of user responses for all the activities defintions
+            })
+            .ToList();
+
+        return activityDefinitionDtos;
+    }
+}

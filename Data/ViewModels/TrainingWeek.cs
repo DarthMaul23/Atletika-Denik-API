@@ -45,7 +45,7 @@ public class Activity1
 }
 
 public class Activity2{
-    public string trainingId { get; set; }
+    public string tagAsociationId { get; set; }
     public string name { get; set; }
     public string color { get; set; }
     public string description { get; set; }

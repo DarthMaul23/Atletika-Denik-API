@@ -1,41 +1,52 @@
 using Atletika_Denik_API.Data.Services;
 using Atletika_Denik_API.Data.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-namespace Atletika_Denik_API.Controllers;
-
-public class ActivityController : ControllerBase
+namespace Atletika_Denik_API.Controllers
 {
-    private ActivityService _activityService;
-
-    public ActivityController(ActivityService activityService)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class ActivityController : ControllerBase
     {
-        _activityService = activityService;
-    }
+        private readonly ActivityService _activityService;
 
-    [HttpGet("get-Activity-List")]
-    public IActionResult GetActivityList(int userId = 0, int pageNo = 1, int itemsPerPage = 50, string search = "")
-    {
-        return Ok(_activityService.GetListOfActivities(userId, pageNo, itemsPerPage, search));
-    }
+        public ActivityController(ActivityService activityService)
+        {
+            _activityService = activityService;
+        }
 
-    [HttpGet("get-Activity-Description")]
-    public IActionResult GetActivityDescription(string tagId)
-    {
-        return Ok(_activityService.GetActivityDescription(tagId));
-    }
+        [HttpGet("activities")]
+        public IActionResult GetActivityList(int userId = 0, int pageNo = 1, int itemsPerPage = 50, string search = "")
+        {
+            return Ok(_activityService.GetListOfActivities(userId, pageNo, itemsPerPage, search));
+        }
 
-    [HttpGet("get-Activity-Detail")]
-    public IActionResult GetActivityDetail(string tagId)
-    {
-        return Ok(_activityService.GetActivityDetail(tagId));
-    }
+        [HttpGet("activities/{tagId}/description")]
+        public IActionResult GetActivityDescription(string tagId)
+        {
+            return Ok(_activityService.GetActivityDescription(tagId));
+        }
 
-    [HttpPost("create-New-Activity")]
-    public async Task<IActionResult> CreateNewActivityAsync(NewTag tag,[FromBody] List<NewTagUserSettings> details)
-    {
-        await _activityService.CreateNewActivity(tag, details);
-        return Ok();
-    }
+        [HttpGet("activities/{tagId}/detail")]
+        public IActionResult GetActivityDetail(string tagId)
+        {
+            return Ok(_activityService.GetActivityDetail(tagId));
+        }
 
+        [HttpGet("activities/definition/tagAsociaiton/{tagAsociationId}/user/{userId}")]
+        public IActionResult GetActivityDefinitionByTagAssociationId(string tagAsociationId = "1a2b3c4d-5e6f-7a8b-9c1d-2e3f4a5b6c7d", int userId = 1)
+        {
+            var result = _activityService.GetActivityDefinitionByTagAssociationId(tagAsociationId, userId);
+            if (result != null)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+    }
 }

@@ -11,7 +11,7 @@ namespace Atletika_Denik_API.Data.Models
     public class ActivitiesContext : DbContext
     {
         Errors error = new Errors();
-        
+
         public DbSet<ViewModels.Tag> Tag { get; set; }
         public DbSet<ViewModels.Tag_Association> Tag_Association { get; set; }
 
@@ -20,6 +20,10 @@ namespace Atletika_Denik_API.Data.Models
         public DbSet<ViewModels.Tag_User_Settings> Tag_User_Settings { get; set; }
 
         public DbSet<ViewModels.Tag_User_Response> Tag_User_Response { get; set; }
+
+        public DbSet<Tag_Activities_Definitions> Tag_Activities_Definitions { get; set; }
+        public DbSet<Tag_Activities_Association> Tag_Activities_Association { get; set; }
+        public DbSet<Tag_Activities_User_Responses> Tag_Activities_User_Responses { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -31,12 +35,16 @@ namespace Atletika_Denik_API.Data.Models
         {
             modelBuilder.Entity<ViewModels.Tag>().HasKey(k => k.id);
             modelBuilder.Entity<ViewModels.Tag>().Property(p => p.id).ValueGeneratedNever();
+
             modelBuilder.Entity<ViewModels.Tag_Association>().HasKey(k => k.id);
             modelBuilder.Entity<ViewModels.Tag_Association>().Property(p => p.id).ValueGeneratedNever();
+
             modelBuilder.Entity<ViewModels.Tag_Details>().HasKey(k => k.id);
             modelBuilder.Entity<ViewModels.Tag_Details>().Property(p => p.id).ValueGeneratedNever();
+
             modelBuilder.Entity<ViewModels.Tag_User_Settings>().HasKey(k => k.id);
             modelBuilder.Entity<ViewModels.Tag_User_Settings>().Property(p => p.id).ValueGeneratedNever();
+
             modelBuilder.Entity<ViewModels.Tag_User_Response>().HasKey(k => k.id);
             modelBuilder.Entity<ViewModels.Tag_User_Response>().Property(p => p.id).ValueGeneratedNever();
         }
