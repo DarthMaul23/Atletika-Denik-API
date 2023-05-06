@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Atletika_Denik_API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    //[Route("api/[controller]")]
     public class ActivityController : ControllerBase
     {
         private readonly ActivityService _activityService;
@@ -17,22 +17,30 @@ namespace Atletika_Denik_API.Controllers
             _activityService = activityService;
         }
 
+        
+        [HttpPost("create-New-Activity")]
+        public async Task<IActionResult> CreateNewActivityAsync([FromBody] CreateTag _newTag)
+        {
+            await _activityService.CreateNewActivity(_newTag.tag, _newTag.details);
+            return Ok();
+        }
+
         [HttpGet("activities")]
         public IActionResult GetActivityList(int userId = 0, int pageNo = 1, int itemsPerPage = 50, string search = "")
         {
             return Ok(_activityService.GetListOfActivities(userId, pageNo, itemsPerPage, search));
         }
 
-        [HttpGet("activities/{tagId}/description")]
-        public IActionResult GetActivityDescription(string tagId)
+        [HttpGet("activities/{tagAsociationId}/description")]
+        public IActionResult GetActivityDescription(string tagAsociationId)
         {
-            return Ok(_activityService.GetActivityDescription(tagId));
+            return Ok(_activityService.GetActivityDescription(tagAsociationId));
         }
 
-        [HttpGet("activities/{tagId}/detail")]
-        public IActionResult GetActivityDetail(string tagId)
+        [HttpGet("activities/{tagAsociationId}/detail")]
+        public IActionResult GetActivityDetail(string tagAsociationId)
         {
-            return Ok(_activityService.GetActivityDetail(tagId));
+            return Ok(_activityService.GetActivityDetail(tagAsociationId));
         }
 
         [HttpGet("activities/definition/tagAsociaiton/{tagAsociationId}/user/{userId}")]

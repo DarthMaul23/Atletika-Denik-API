@@ -9,6 +9,11 @@ public class ReturnItems
     public int noRecords { get; set; }
 }
 
+public class CreateTag{
+    public NewTag tag {get; set; }
+    public List<NewTagUserSettings> details { get; set;}
+ }
+
 public class Tag_Association
 {
     public string id { get; set; }
@@ -139,8 +144,8 @@ public class ActivityDefinitionDto
 {
     public string Id { get; set; }
     public string Name { get; set; }
-    public string Definitions { get; set; }
-    public List<UserResponseDto> Responses { get; set; }
+    public string Definition { get; set; }
+    public UserResponseDto Response { get; set; }
 }
 
 public class UserResponseDto
