@@ -18,7 +18,7 @@ public class ActivityService
         _activitiesContext = activiesContext;
     }
 
-    public ReturnItems GetListOfActivities(int userId, int pageNo, int itemsPerPage, string searchTerm)
+    public ReturnItems GetListOfActivities(int userId, int pageNo, int itemsPerPage, string? searchTerm)
     {
         using (var context = _activitiesContext)
         {
@@ -110,7 +110,7 @@ public class ActivityService
         }
     }
 
-    public async Task CreateNewActivity(NewTag tag, List<NewTagUserSettings> details)
+    public async Task CreateNewActivity(NewTag tag, List<NewTagUserSettings> details, List<ActivityDefinitionDto> activities)
     {
         using (var context = _activitiesContext)
         {
@@ -125,6 +125,34 @@ public class ActivityService
             };
 
             context.Tag.Add(_tag);
+
+            //Preparing the list of records for table Tag_Actvities_Definitions
+            List<Tag_Activities_Definitions> activities_Definitions = new List<Tag_Activities_Definitions>();
+            foreach (var activity in activities)
+            {
+                activities_Definitions.Add(new Tag_Activities_Definitions()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = activity.Name,
+                    Definition = activity.Definition
+                });
+            }
+
+            context.Tag_Activities_Definitions.AddRange(activities_Definitions);
+
+            //Preparing the list of records for table Tag_Activities_Association
+            List<Tag_Activities_Association> activities_Associations = new List<Tag_Activities_Association>();
+            foreach (var activity in activities_Definitions)
+            {
+                activities_Associations.Add(new Tag_Activities_Association()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    TagId = _NewTagId,
+                    ActivityDefinitionId = activity.Id
+                });
+            }
+
+            context.Tag_Activities_Association.AddRange(activities_Associations);
 
             foreach (var detail in details)
             {
@@ -153,23 +181,42 @@ public class ActivityService
 
                 List<DateTime> dates = dataTrans.GetDatesBetween(Convert.ToDateTime(detail.dateFrom), Convert.ToDateTime(detail.dateTo), detail.weekDay, detail.repetition, false);
 
-                foreach (var date in dates)
+                foreach (var _date in dates)
                 {
-                    var _TagDetails = new Tag_Details()
+                    var _TagDetail = new Tag_Details()
                     {
                         id = Guid.NewGuid().ToString(),
                         tagAsocId = _NewTagAsocId,
-                        date = date.ToString("yyyy-MM-dd"),
+                        date = _date.ToString("yyyy-MM-dd"),
                         created = DateTime.Now.ToString("yyyy-MM-dd")
                     };
 
-                    context.Tag_Details.Add(_TagDetails);
+                    context.Tag_Details.Add(_TagDetail);
+
+                    List<Tag_Activities_User_Responses> activities_User_Responses = new List<Tag_Activities_User_Responses>();
+                    foreach (var _item in activities_Definitions)
+                    {
+                        activities_User_Responses.Add(
+                            new Tag_Activities_User_Responses()
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                UserId = detail.id,
+                                TagDetailId = _TagDetail.id,
+                                ActivityDefinitionId = _item.Id,
+                                Response = 1,
+                                Date = _date.ToString("yyyy-MM-dd")
+                            }
+                        );
+                    }
+
+                    context.Tag_Activities_User_Responses.AddRange(activities_User_Responses);
                 }
 
                 await context.SaveChangesAsync();
             }
         }
     }
+
     public List<ActivityDefinitionDto> GetActivityDefinitionByTagAssociationId(string tagAssociationId, int userId)
     {
 
@@ -187,11 +234,11 @@ public class ActivityService
                         .Contains(joined.res.TagDetailId))
                         .Select(joined => new
                         {
-                        DefinitionId = joined.def.Id,
-                        ResponseId = joined.res.Id,
-                        Response = joined.res.Response,
-                        Name = joined.def.Name,
-                        Definition = joined.def.Definition
+                            DefinitionId = joined.def.Id,
+                            ResponseId = joined.res.Id,
+                            Response = joined.res.Response,
+                            Name = joined.def.Name,
+                            Definition = joined.def.Definition
                         });
 
         var result = query.ToList();
@@ -207,7 +254,7 @@ public class ActivityService
                 Id = g.DefinitionId,
                 Name = g.Name,
                 Definition = g.Definition,
-                Response = new UserResponseDto(){ Id = g.ResponseId, Response = g.Response }
+                Response = new UserResponseDto() { Id = g.ResponseId, Response = g.Response }
             })
             .ToList();
 

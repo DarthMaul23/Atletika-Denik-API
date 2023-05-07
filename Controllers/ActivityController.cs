@@ -21,12 +21,12 @@ namespace Atletika_Denik_API.Controllers
         [HttpPost("create-New-Activity")]
         public async Task<IActionResult> CreateNewActivityAsync([FromBody] CreateTag _newTag)
         {
-            await _activityService.CreateNewActivity(_newTag.tag, _newTag.details);
+            await _activityService.CreateNewActivity(_newTag.tag, _newTag.details, _newTag.activities);
             return Ok();
         }
 
         [HttpGet("activities")]
-        public IActionResult GetActivityList(int userId = 0, int pageNo = 1, int itemsPerPage = 50, string search = "")
+        public IActionResult GetActivityList(int userId = 0, int pageNo = 1, int itemsPerPage = 50, string? search = "")
         {
             return Ok(_activityService.GetListOfActivities(userId, pageNo, itemsPerPage, search));
         }

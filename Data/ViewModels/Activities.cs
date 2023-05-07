@@ -9,10 +9,12 @@ public class ReturnItems
     public int noRecords { get; set; }
 }
 
-public class CreateTag{
-    public NewTag tag {get; set; }
-    public List<NewTagUserSettings> details { get; set;}
- }
+public class CreateTag
+{
+    public NewTag tag { get; set; }
+    public List<NewTagUserSettings> details { get; set; }
+    public List<ActivityDefinitionDto> activities { get; set; }
+}
 
 public class Tag_Association
 {
@@ -28,7 +30,7 @@ public class Tag
     public string color { get; set; }
     public string description { get; set; }
 
-     public ICollection<Tag_Activities_Association> TagAssociations { get; set; }
+    public ICollection<Tag_Activities_Association> TagAssociations { get; set; }
 }
 
 public class Tag_Details
@@ -105,7 +107,7 @@ public class TagDetail
 
 public class Tag_Activities_Definitions
 {
-     public string Id { get; set; }
+    public string Id { get; set; }
     public string Name { get; set; }
     public string Definition { get; set; }
     public ICollection<Tag_Activities_Association> TagAssociations { get; set; }
@@ -138,6 +140,13 @@ public class CreateActivityDefinitionRequest
     public Tag_Activities_Definitions Definition { get; set; }
     public List<Tag_Activities_User_Responses> Responses { get; set; }
     public List<int> UserIds { get; set; }
+}
+
+public class TagActivitiesDefinition
+{
+    public string Id { get; set; }
+    public string Name { get; set; }
+    public string Definition { get; set; }
 }
 
 public class ActivityDefinitionDto
