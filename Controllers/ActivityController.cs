@@ -43,10 +43,10 @@ namespace Atletika_Denik_API.Controllers
             return Ok(_activityService.GetActivityDetail(tagAsociationId));
         }
 
-        [HttpGet("activities/definition/tagAsociaiton/{tagAsociationId}/user/{userId}")]
-        public IActionResult GetActivityDefinitionByTagAssociationId(string tagAsociationId = "1a2b3c4d-5e6f-7a8b-9c1d-2e3f4a5b6c7d", int userId = 1)
+        [HttpGet("activities/definition/tagAsociaiton/{tagAsociationId}/user/{userId}/date/{date}")]
+        public IActionResult GetActivityDefinitionByTagAssociationId(string tagAsociationId = "1a2b3c4d-5e6f-7a8b-9c1d-2e3f4a5b6c7d", int userId = 1, string date = "")
         {
-            var result = _activityService.GetActivityDefinitionByTagAssociationId(tagAsociationId, userId);
+            var result = _activityService.GetActivityDefinitionByTagAssociationId(tagAsociationId, userId, date);
             if (result != null)
             {
                 return Ok(result);

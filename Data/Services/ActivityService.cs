@@ -217,7 +217,7 @@ public class ActivityService
         }
     }
 
-    public List<ActivityDefinitionDto> GetActivityDefinitionByTagAssociationId(string tagAssociationId, int userId)
+    public List<ActivityDefinitionDto> GetActivityDefinitionByTagAssociationId(string tagAssociationId, int userId, string date)
     {
 
         var query = _activitiesContext.Tag_Activities_User_Responses
@@ -227,7 +227,7 @@ public class ActivityService
                         (res, def) => new { res, def })
                         .Where(joined => _activitiesContext.Tag_Details
                         .Where(detail => _activitiesContext.Tag_Association
-                            .Where(assoc => assoc.id == tagAssociationId && assoc.userId == userId)
+                            .Where(assoc => assoc.id == tagAssociationId && assoc.userId == userId && detail.date == date)
                             .Select(assoc => assoc.id)
                             .Contains(detail.tagAsocId))
                         .Select(detail => detail.id)
