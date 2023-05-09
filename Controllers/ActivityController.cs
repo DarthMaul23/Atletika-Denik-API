@@ -37,10 +37,10 @@ namespace Atletika_Denik_API.Controllers
             return Ok(_activityService.GetActivityDescription(tagAsociationId));
         }
 
-        [HttpGet("activities/{tagAsociationId}/detail")]
-        public IActionResult GetActivityDetail(string tagAsociationId)
+        [HttpGet("activities/{tagId}/detail")]
+        public IActionResult GetActivityDetail(string tagId)
         {
-            return Ok(_activityService.GetActivityDetail(tagAsociationId));
+            return Ok(_activityService.GetActivityDetail(tagId));
         }
 
         [HttpGet("activities/definition/tagAsociaiton/{tagAsociationId}/user/{userId}/date/{date}")]
@@ -55,6 +55,13 @@ namespace Atletika_Denik_API.Controllers
             {
                 return NotFound();
             }
+        }
+
+        [HttpPost("activities/setResponse/responseId/{responseId}/responseValue/{responseValue}")]
+        public IActionResult SetActivityResponse(string responseId, int responseValue)
+        {
+            _activityService.setActivityResponse(responseId, responseValue);
+            return Ok();
         }
     }
 }

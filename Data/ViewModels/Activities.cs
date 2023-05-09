@@ -13,7 +13,7 @@ public class CreateTag
 {
     public NewTag tag { get; set; }
     public List<NewTagUserSettings> details { get; set; }
-    public List<ActivityDefinitionDto> activities { get; set; }
+    public List<ActivityDefinitionCreate> activities { get; set; }
 }
 
 public class Tag_Association
@@ -110,6 +110,7 @@ public class Tag_Activities_Definitions
     public string Id { get; set; }
     public string Name { get; set; }
     public string Definition { get; set; }
+    public int Order { get; set; }
     public ICollection<Tag_Activities_Association> TagAssociations { get; set; }
     public ICollection<Tag_Activities_User_Responses> UserResponses { get; set; }
 }
@@ -147,6 +148,16 @@ public class TagActivitiesDefinition
     public string Id { get; set; }
     public string Name { get; set; }
     public string Definition { get; set; }
+    public int Order { get; set; }
+}
+
+public class ActivityDefinitionCreate
+{
+    public string Id { get; set; }
+    public string Name { get; set; }
+    public string Definition { get; set; }
+    public int Order {get; set;}
+    public UserResponseDto Response { get; set; }
 }
 
 public class ActivityDefinitionDto

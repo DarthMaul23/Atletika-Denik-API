@@ -18,6 +18,7 @@ public class ActivityService
         _activitiesContext = activiesContext;
     }
 
+    // This method gets a list of activities based on a user, page number, items per page and a search term
     public ReturnItems GetListOfActivities(int userId, int pageNo, int itemsPerPage, string? searchTerm)
     {
         using (var context = _activitiesContext)
@@ -35,21 +36,23 @@ public class ActivityService
         }
     }
 
-    public TagDetail GetActivityDescription(string tagAsociationId)
+    // Get activity description by tag association ID
+    public TagDetail GetActivityDescription(string tagAssociationId)
     {
         using (var context = _activitiesContext)
         {
-            var query = (from tagDetail in context.Tag_Details
-                         join tagAsoc in context.Tag_Association on tagDetail.tagAsocId equals tagAsoc.id
-                         join tag in context.Tag on tagAsoc.tagId equals tag.id
-                         where tagAsoc.id == tagAsociationId
-                         select new
-                         {
-                             id = tagDetail.id,
-                             name = tag.name,
-                             color = tag.color,
-                             description = tag.description
-                         });
+            var query = context.Tag_Details
+                        .Join(context.Tag_Association, td => td.tagAsocId, ta => ta.id, (td, ta) => new { td, ta })
+                        .Join(context.Tag, j => j.ta.tagId, t => t.id, (j, t) => new { j, t })
+                        .Where(jt => jt.j.ta.id == tagAssociationId)
+                        .Select(jt => new
+                        {
+                            id = jt.j.td.id,
+                            name = jt.t.name,
+                            color = jt.t.color,
+                            description = jt.t.description
+                        });
+
 
             if (query.ToList().Count == 0)
             {
@@ -62,33 +65,50 @@ public class ActivityService
         }
     }
 
-    public EditTag GetActivityDetail(string tagAsocId)
+    // Get activity detail by tag ID
+    public EditTag GetActivityDetail(string tagId)
     {
         using (var context = _activitiesContext)
         {
-            var queryTag = (from tag in context.Tag
-                            where tag.id == context.Tag_Association.FirstOrDefault(x => x.id == tagAsocId).tagId
-                            select new
-                            {
-                                id = tag.id,
-                                name = tag.name,
-                                color = tag.color,
-                                description = tag.description
-                            }).First();
+            var queryTag = context.Tag
+                .Where(tag => tag.id == tagId)
+                .Select(tag => new
+                {
+                    id = tag.id,
+                    name = tag.name,
+                    color = tag.color,
+                    description = tag.description
+                })
+                .FirstOrDefault();
 
-            var queryTagSettings = from tagUserSettings in context.Tag_User_Settings
-                                   join tagAssociation in context.Tag_Association on tagUserSettings.tagAsocId equals tagAssociation.id
-                                   where tagAssociation.tagId == queryTag.id
-                                   select new
-                                   {
-                                       id = tagAssociation.userId,
-                                       asocId = tagUserSettings.tagAsocId,
-                                       repetition = tagUserSettings.repetition,
-                                       weekDay = tagUserSettings.weekDay,
-                                       col = tagUserSettings.col,
-                                       dateFrom = tagUserSettings.dateFrom,
-                                       dateTo = tagUserSettings.dateTo,
-                                   };
+            var queryTagSettings = context.Tag_User_Settings
+                                    .Join(context.Tag_Association,
+                                        tagUserSettings => tagUserSettings.tagAsocId,
+                                        tagAssociation => tagAssociation.id,
+                                        (tagUserSettings, tagAssociation) => new
+                                        {
+                                            TagUserId = tagAssociation.userId,
+                                            TagUserAsocId = tagUserSettings.tagAsocId,
+                                            Repetition = tagUserSettings.repetition,
+                                            WeekDay = tagUserSettings.weekDay,
+                                            Col = tagUserSettings.col,
+                                            DateFrom = tagUserSettings.dateFrom,
+                                            DateTo = tagUserSettings.dateTo,
+                                            TagId = tagAssociation.tagId
+                                        })
+                                    .Where(tagUser => tagUser.TagId == tagId)
+                                    .Select(tagUser => new
+                                    {
+                                        id = tagUser.TagUserId,
+                                        asocId = tagUser.TagUserAsocId,
+                                        repetition = tagUser.Repetition,
+                                        weekDay = tagUser.WeekDay,
+                                        col = tagUser.Col,
+                                        dateFrom = tagUser.DateFrom,
+                                        dateTo = tagUser.DateTo,
+                                    })
+                                    .ToList();
+
 
             List<EditTagSettings> _settings = new List<EditTagSettings>();
 
@@ -110,7 +130,8 @@ public class ActivityService
         }
     }
 
-    public async Task CreateNewActivity(NewTag tag, List<NewTagUserSettings> details, List<ActivityDefinitionDto> activities)
+    // Create a new activity with a tag, user settings, and activities
+    public async Task CreateNewActivity(NewTag tag, List<NewTagUserSettings> details, List<ActivityDefinitionCreate> activities)
     {
         using (var context = _activitiesContext)
         {
@@ -134,7 +155,8 @@ public class ActivityService
                 {
                     Id = Guid.NewGuid().ToString(),
                     Name = activity.Name,
-                    Definition = activity.Definition
+                    Definition = activity.Definition,
+                    Order = activity.Order
                 });
             }
 
@@ -217,6 +239,7 @@ public class ActivityService
         }
     }
 
+    // Get activity definition by tag association ID, user ID, and date
     public List<ActivityDefinitionDto> GetActivityDefinitionByTagAssociationId(string tagAssociationId, int userId, string date)
     {
 
@@ -232,6 +255,7 @@ public class ActivityService
                             .Contains(detail.tagAsocId))
                         .Select(detail => detail.id)
                         .Contains(joined.res.TagDetailId))
+                        .OrderBy(joined => joined.def.Order)
                         .Select(joined => new
                         {
                             DefinitionId = joined.def.Id,
@@ -259,5 +283,19 @@ public class ActivityService
             .ToList();
 
         return activityDefinitionDtos;
+    }
+    
+    // Set activity response by response ID and new response value
+    public void setActivityResponse(string responseId, int newResponse)
+    {
+        using (var context = _activitiesContext)
+        {
+            var record = context.Tag_Activities_User_Responses.First(x => x.Id == responseId);
+            if (record != null)
+            {
+                record.Response = newResponse;
+                context.SaveChanges();
+            }
+        }
     }
 }
