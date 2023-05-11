@@ -39,10 +39,10 @@ public class TrainingController : ControllerBase
         return Ok(_trainingService.DeleteTraining(treninkId));
     }
     
-    [HttpPut("update-Training-Response")]
-    public IActionResult UpdateTrainingResponse(string treninkId, [FromBody] List<Training_User_Response> response)
+    [HttpPut("update-Training-Response/treninkResponseId/{treninkResponseId}/response/{response}")]
+    public IActionResult UpdateTrainingResponse(int treninkResponseId, int response)
     {
-        _trainingService.UpdateTrainingResponse(treninkId, response);
+        _trainingService.UpdateTrainingResponse(treninkResponseId, response);
         return Ok();
     }
 

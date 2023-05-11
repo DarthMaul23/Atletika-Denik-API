@@ -273,30 +273,15 @@ public class TrainingService
         }
     }
 
-    public void UpdateTrainingResponse(string _trainingId, List<Training_User_Response> response)
+    public void UpdateTrainingResponse(int _trainingResponseId, int response)
     {
         using (var context = _trainingContext)
         {
-            var _trainingResponse = context.Training_User_Response.Where(a => a.trainingId == _trainingId);
+            var _trainingResponse = context.Training_User_Response.First(a => a.id == _trainingResponseId);
 
-            foreach (var _item in _trainingResponse)
-            {
-                context.Entry(_item).State = EntityState.Deleted;
-                context.Training_User_Response.Remove(_item);
-            }
+            _trainingResponse.response = response;
+            context.Entry(_trainingResponse).State = EntityState.Modified;
 
-            int id_response = context.Training_User_Response.Select(r => r.id).Max();
-
-            foreach (var item in response)
-            {
-                context.Training_User_Response.Add(new Training_User_Response()
-                {
-                    id = id_response + (response.IndexOf(item) + 1),
-                    trainingId = _trainingId,
-                    rowId = (response.IndexOf(item) + 1),
-                    response = item.response
-                });
-            }
             context.SaveChanges();
         }
     }
